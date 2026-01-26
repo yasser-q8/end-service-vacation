@@ -194,7 +194,7 @@
         }
 
         .employee-row {
-            grid-template-columns: 92px 0.8fr 160px 100px 80px 100px 80px 120px 110px;
+            grid-template-columns: 92px 0.8fr 160px 100px 80px 100px 80px 100px 100px 100px 110px;
             align-items: center;
             gap: 10px;
         }
@@ -940,6 +940,10 @@
                         <input type="number" id="employeeVacationDays" placeholder="الإجازة" value="30">
                     </div>
                     <div class="input-group">
+                        <label for="employeeUsedDays">الأيام المستنفذة</label>
+                        <input type="number" id="employeeUsedDays" placeholder="المستنفذة" value="0">
+                    </div>
+                    <div class="input-group">
                         <label for="employeeCutDays">الأيام المقطوعة</label>
                         <input type="number" id="employeeCutDays" placeholder="المقطوعة" value="0">
                     </div>
@@ -965,6 +969,7 @@
                             <th style="width: 100px;">بدل المواصلات</th>
                             <th style="width: 90px;">بدلات أخرى</th>
                             <th style="width: 90px;">رصيد الإجازات</th>
+                            <th style="width: 90px;">الأيام المستنفذة</th>
                             <th style="width: 90px;">الأيام المقطوعة</th>
                             <th style="width: 250px;">الإجراءات</th>
                         </tr>
@@ -1183,6 +1188,9 @@
                 <button class="btn btn-pulse" id="calculateVacation">
                     <i class="fas fa-calculator"></i> حساب مستحقات الإجازة
                 </button>
+                <button class="btn btn-success" id="saveVacation" style="display: none;">
+                    <i class="fas fa-save"></i> حفظ الإجازة
+                </button>
                 <button class="btn btn-success" id="exportVacationPDF">
                     <i class="fas fa-file-pdf"></i> تصدير إلى PDF
                 </button>
@@ -1241,6 +1249,16 @@
                         <td class="description">إجمالي مستحقات الإجازة:</td>
                         <td class="value" id="vacationTotal">0 د.ك</td>
                         <td class="details">-</td>
+                    </tr>
+                    <tr>
+                        <td class="description">الرصيد الجديد بعد الإجازة:</td>
+                        <td class="value" id="newVacationBalance">0 يوم</td>
+                        <td class="details" id="newVacationBalanceDetails"></td>
+                    </tr>
+                    <tr>
+                        <td class="description">الأيام المقطوعة الجديدة:</td>
+                        <td class="value" id="newCutBalance">0 يوم</td>
+                        <td class="details" id="newCutBalanceDetails"></td>
                     </tr>
                 </table>
             </div>
@@ -1606,6 +1624,9 @@
             // النسخ الاحتياطية
             let backups = JSON.parse(localStorage.getItem('backups')) || [];
             
+            // متغيرات مؤقتة لحساب الإجازة
+            let currentVacationCalculation = null;
+            
             // عناصر التحكم
             const navButtons = document.querySelectorAll('.nav-btn');
             const screens = document.querySelectorAll('.screen');
@@ -1617,6 +1638,7 @@
             const vacationEmployeeSearchResults = document.getElementById('vacationEmployeeSearchResults');
             const calculateEndServiceBtn = document.getElementById('calculateEndService');
             const calculateVacationBtn = document.getElementById('calculateVacation');
+            const saveVacationBtn = document.getElementById('saveVacation');
             const exportPDFBtn = document.getElementById('exportPDF');
             const exportVacationPDFBtn = document.getElementById('exportVacationPDF');
             const endServiceResults = document.getElementById('endServiceResults');
@@ -1707,6 +1729,7 @@
             addEmployeeBtn.addEventListener('click', addOrUpdateEmployee);
             calculateEndServiceBtn.addEventListener('click', calculateEndService);
             calculateVacationBtn.addEventListener('click', calculateVacation);
+            saveVacationBtn.addEventListener('click', saveVacation);
             exportPDFBtn.addEventListener('click', exportPDF);
             exportVacationPDFBtn.addEventListener('click', exportVacationPDF);
             generateReportBtn.addEventListener('click', generateVacationReport);
@@ -1788,15 +1811,24 @@
             }
             
             // دالة حساب عدد أيام الإجازة المتراكمة حسب قانون العمل الكويتي
-            function calculateAccumulatedVacation(hireDate, calculationDate) {
+            function calculateAccumulatedVacation(hireDate, calculationDate, lastVacationDate = null) {
                 if (!hireDate || !calculationDate) return 0;
                 
                 const hire = new Date(hireDate);
                 const calc = new Date(calculationDate);
                 
+                // إذا كان هناك تاريخ آخر إجازة، نبدأ الحساب منه
+                let startDate = hire;
+                if (lastVacationDate) {
+                    const lastVacation = new Date(lastVacationDate);
+                    // نبدأ من اليوم التالي لآخر إجازة
+                    lastVacation.setDate(lastVacation.getDate() + 1);
+                    startDate = lastVacation;
+                }
+                
                 // حساب الفرق بالشهور
-                let years = calc.getFullYear() - hire.getFullYear();
-                let months = calc.getMonth() - hire.getMonth();
+                let years = calc.getFullYear() - startDate.getFullYear();
+                let months = calc.getMonth() - startDate.getMonth();
                 
                 if (months < 0) {
                     years--;
@@ -1823,6 +1855,7 @@
                 const employeeTransport = parseFormattedNumber(document.getElementById('employeeTransport').value) || 0;
                 const employeeOther = parseFormattedNumber(document.getElementById('employeeOther').value) || 0;
                 const employeeVacationDays = parseInt(document.getElementById('employeeVacationDays').value) || 0;
+                const employeeUsedDays = parseInt(document.getElementById('employeeUsedDays').value) || 0;
                 const employeeCutDays = parseInt(document.getElementById('employeeCutDays').value) || 0;
                 
                 if (!employeeId || !employeeName || !employeeHireDate) {
@@ -1847,20 +1880,23 @@
                         transport: employeeTransport,
                         other: employeeOther,
                         vacationDays: employeeVacationDays,
+                        usedDays: employeeUsedDays,
                         cutDays: employeeCutDays,
+                        lastVacationCalculation: null,
                         vacationHistory: []
                     };
                     
                     employees.push(newEmployee);
                     
                     // إضافة سجل للرصيد الابتدائي
-                    if (employeeVacationDays > 0 || employeeCutDays > 0) {
-                        addVacationHistoryRecord(employeeId, 'رصيد ابتدائي', 0, 0, employeeVacationDays, employeeCutDays, 'الرصيد الابتدائي للموظف');
+                    if (employeeVacationDays > 0 || employeeCutDays > 0 || employeeUsedDays > 0) {
+                        addVacationHistoryRecord(employeeId, 'رصيد ابتدائي', employeeUsedDays, 0, employeeVacationDays, employeeCutDays, 'الرصيد الابتدائي للموظف');
                     }
                 } else {
                     // تعديل موظف موجود
                     const oldEmployee = employees[editingEmployeeIndex];
                     const oldVacationDays = oldEmployee.vacationDays || 0;
+                    const oldUsedDays = oldEmployee.usedDays || 0;
                     const oldCutDays = oldEmployee.cutDays || 0;
                     
                     employees[editingEmployeeIndex] = {
@@ -1872,13 +1908,15 @@
                         transport: employeeTransport,
                         other: employeeOther,
                         vacationDays: employeeVacationDays,
+                        usedDays: employeeUsedDays,
                         cutDays: employeeCutDays,
+                        lastVacationCalculation: oldEmployee.lastVacationCalculation,
                         vacationHistory: oldEmployee.vacationHistory || []
                     };
                     
                     // إضافة سجل إذا تغير الرصيد
-                    if (oldVacationDays !== employeeVacationDays || oldCutDays !== employeeCutDays) {
-                        addVacationHistoryRecord(employeeId, 'تعديل رصيد', 0, 0, employeeVacationDays, employeeCutDays, 'تعديل رصيد الإجازات والأيام المقطوعة');
+                    if (oldVacationDays !== employeeVacationDays || oldCutDays !== employeeCutDays || oldUsedDays !== employeeUsedDays) {
+                        addVacationHistoryRecord(employeeId, 'تعديل رصيد', employeeUsedDays, 0, employeeVacationDays, employeeCutDays, 'تعديل رصيد الإجازات والأيام المقطوعة والمستنفذة');
                     }
                     
                     // إعادة تعيين حالة التعديل
@@ -1899,6 +1937,7 @@
                 document.getElementById('employeeTransport').value = '';
                 document.getElementById('employeeOther').value = '';
                 document.getElementById('employeeVacationDays').value = '30';
+                document.getElementById('employeeUsedDays').value = '0';
                 document.getElementById('employeeCutDays').value = '0';
                 
                 alert(editingEmployeeIndex === -1 ? 'تم إضافة الموظف بنجاح' : 'تم تعديل بيانات الموظف بنجاح');
@@ -1909,7 +1948,7 @@
                 employeesList.innerHTML = '';
                 
                 if (employees.length === 0) {
-                    employeesList.innerHTML = '<tr><td colspan="10" style="text-align: center;">لا توجد بيانات موظفين</td></tr>';
+                    employeesList.innerHTML = '<tr><td colspan="11" style="text-align: center;">لا توجد بيانات موظفين</td></tr>';
                     return;
                 }
                 
@@ -1924,6 +1963,7 @@
                         <td>${employee.transport > 0 ? formatNumber(employee.transport) + ' د.ك' : ''}</td>
                         <td>${employee.other > 0 ? formatNumber(employee.other) + ' د.ك' : ''}</td>
                         <td>${employee.vacationDays > 0 ? employee.vacationDays + ' يوم' : ''}</td>
+                        <td>${employee.usedDays > 0 ? employee.usedDays + ' يوم' : ''}</td>
                         <td>${employee.cutDays > 0 ? employee.cutDays + ' يوم' : ''}</td>
                         <td>
                             <button class="btn btn-warning" onclick="editEmployee(${index})">
@@ -1950,6 +1990,7 @@
                 document.getElementById('employeeTransport').value = employee.transport > 0 ? formatNumber(employee.transport) : '';
                 document.getElementById('employeeOther').value = employee.other > 0 ? formatNumber(employee.other) : '';
                 document.getElementById('employeeVacationDays').value = employee.vacationDays || '';
+                document.getElementById('employeeUsedDays').value = employee.usedDays || '';
                 document.getElementById('employeeCutDays').value = employee.cutDays || '';
                 
                 editingEmployeeIndex = index;
@@ -2023,7 +2064,7 @@
                 } else if (screenType === 'vacation') {
                     // عرض رصيد الإجازات في حقل البحث
                     const searchInput = document.getElementById('vacationEmployeeSearch');
-                    searchInput.value = `${employee.id} - ${employee.name} (رصيد الإجازات: ${employee.vacationDays} يوم، الأيام المقطوعة: ${employee.cutDays} يوم)`;
+                    searchInput.value = `${employee.id} - ${employee.name} (رصيد الإجازات: ${employee.vacationDays} يوم، الأيام المستنفذة: ${employee.usedDays} يوم، الأيام المقطوعة: ${employee.cutDays} يوم)`;
                 }
             }
             
@@ -2098,6 +2139,11 @@
                 // تحديث رصيد الموظف
                 employee.vacationDays = balanceAfter;
                 employee.cutDays = cutBalanceAfter;
+                
+                // تحديث الأيام المستنفذة
+                if (type === 'صرف إجازة') {
+                    employee.usedDays = (employee.usedDays || 0) + usedDays;
+                }
                 
                 // إضافة السجل للتاريخ العام
                 vacationHistory.push(record);
@@ -2267,7 +2313,7 @@
                 endServiceResults.classList.add('show');
             }
             
-            // دالة حساب مستحقات الإجازة
+            // دالة حساب مستحقات الإجازة (عرض فقط - لا تحديث للرصيد)
             function calculateVacation() {
                 const employeeId = document.getElementById('vacationEmployeeSelect').value;
                 const vacationStartDate = document.getElementById('vacationStartDate').value;
@@ -2289,7 +2335,9 @@
                 const transport = employee.transport || 0;
                 const other = employee.other || 0;
                 const vacationBalance = employee.vacationDays || 0;
+                const usedDays = employee.usedDays || 0;
                 const cutBalance = employee.cutDays || 0;
+                const lastVacationDate = employee.lastVacationCalculation;
                 
                 // حساب مدة الإجازة بالأيام
                 const startDate = new Date(vacationStartDate);
@@ -2298,14 +2346,16 @@
                 const vacationPeriodDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
                 
                 // حساب الإجازات المتراكمة حتى تاريخ بداية الإجازة
-                const accumulatedVacation = calculateAccumulatedVacation(employee.hireDate, vacationStartDate);
+                const accumulatedVacation = calculateAccumulatedVacation(employee.hireDate, vacationStartDate, lastVacationDate);
                 
-                // تحديد عدد أيام الإجازة (الحد الأدنى بين رصيد الإجازات والفترة المطلوبة والإجازات المتراكمة)
-                let availableDays = Math.min(vacationBalance, accumulatedVacation);
-                const vacationDays = Math.min(availableDays, vacationPeriodDays);
+                // حساب الرصيد الكلي (الرصيد الحالي + الإجازات المتراكمة)
+                const totalAvailableBalance = vacationBalance + accumulatedVacation;
+                
+                // تحديد عدد أيام الإجازة (الحد الأدنى بين الرصيد الكلي والفترة المطلوبة)
+                const vacationDays = Math.min(totalAvailableBalance, vacationPeriodDays);
                 
                 if (vacationDays <= 0) {
-                    alert('لا يوجد رصيد إجازات كافٍ لهذا الموظف. الإجازات المتراكمة: ' + accumulatedVacation.toFixed(1) + ' يوم');
+                    alert('لا يوجد رصيد إجازات كافٍ لهذا الموظف. الرصيد الحالي: ' + vacationBalance + ' يوم، الإجازات المتراكمة: ' + accumulatedVacation.toFixed(1) + ' يوم');
                     return;
                 }
                 
@@ -2318,14 +2368,23 @@
                 // حساب إجمالي مستحقات الإجازة
                 const vacationTotal = dayValue * vacationDays;
                 
+                // حساب الرصيد الجديد بعد الإجازة
+                const newVacationBalance = totalAvailableBalance - vacationDays;
+                const daysToCut = Math.max(0, vacationPeriodDays - vacationDays);
+                const newCutBalance = cutBalance + daysToCut;
+                
                 // عرض النتائج
                 document.getElementById('vacationCalcDetails').innerHTML = 
-                    `• رصيد الإجازات: ${vacationBalance} يوم<br>` +
+                    `• الرصيد الحالي: ${vacationBalance} يوم<br>` +
+                    `• الأيام المستنفذة: ${usedDays} يوم<br>` +
                     `• الأيام المقطوعة: ${cutBalance} يوم<br>` +
+                    `• آخر تاريخ حساب إجازة: ${lastVacationDate ? formatDate(lastVacationDate) : 'لم يتم أخذ إجازة سابقاً'}<br>` +
                     `• الإجازات المتراكمة حتى ${formatDate(vacationStartDate)}: ${accumulatedVacation.toFixed(1)} يوم<br>` +
+                    `• الرصيد الكلي المتاح: ${totalAvailableBalance.toFixed(1)} يوم<br>` +
                     `• مدة الإجازة المطلوبة: ${vacationPeriodDays} يوم<br>` +
                     `• أيام الإجازة المستحقة: ${vacationDays} يوم<br>` +
                     `• الراتب اليومي: ${formatNumber(totalSalary)} ÷ ${appSettings.workingDaysPerMonth} = ${formatNumber(dayValue)} د.ك<br>` +
+                    `• الأيام المقطوعة الإضافية: ${daysToCut} يوم<br>` +
                     `• <strong>ملاحظة:</strong> الأيام المقطوعة سيتم خصمها عند نهاية الخدمة، ولا يتم خصمها في حساب الإجازة.`;
                 
                 document.getElementById('vacationPeriod').textContent = vacationDays + ' يوم';
@@ -2340,15 +2399,67 @@
                 document.getElementById('vacationDayValueDetails').textContent = 
                     `${formatNumber(totalSalary)} ÷ ${appSettings.workingDaysPerMonth}`;
                 document.getElementById('vacationTotal').textContent = formatNumber(Math.max(0, vacationTotal)) + ' د.ك';
+                document.getElementById('newVacationBalance').textContent = newVacationBalance.toFixed(1) + ' يوم';
+                document.getElementById('newVacationBalanceDetails').textContent = 
+                    `الرصيد الكلي (${totalAvailableBalance.toFixed(1)}) - أيام الإجازة (${vacationDays})`;
+                document.getElementById('newCutBalance').textContent = newCutBalance + ' يوم';
+                document.getElementById('newCutBalanceDetails').textContent = 
+                    `الأيام المقطوعة الحالية (${cutBalance}) + أيام إضافية (${daysToCut})`;
                 
-                // تحديث رصيد الموظف بعد صرف الإجازة
-                if (confirm('هل تريد تحديث رصيد الإجازات للموظف بعد صرف هذه الإجازة؟\n\n' +
+                // تخزين بيانات الحساب المؤقتة
+                currentVacationCalculation = {
+                    employeeId: employeeId,
+                    employeeName: employee.name,
+                    vacationStartDate: vacationStartDate,
+                    vacationEndDate: vacationEndDate,
+                    vacationPeriodDays: vacationPeriodDays,
+                    vacationDays: vacationDays,
+                    daysToCut: daysToCut,
+                    newVacationBalance: newVacationBalance,
+                    newCutBalance: newCutBalance,
+                    vacationTotal: vacationTotal,
+                    accumulatedVacation: accumulatedVacation
+                };
+                
+                // إظهار زر حفظ الإجازة
+                saveVacationBtn.style.display = 'inline-block';
+                
+                vacationResults.classList.add('show');
+            }
+            
+            // دالة حفظ الإجازة وتحديث الرصيد
+            function saveVacation() {
+                if (!currentVacationCalculation) {
+                    alert('لا توجد بيانات إجازة لحفظها. يرجى حساب الإجازة أولاً.');
+                    return;
+                }
+                
+                const { 
+                    employeeId, 
+                    employeeName, 
+                    vacationStartDate, 
+                    vacationEndDate, 
+                    vacationPeriodDays,
+                    vacationDays,
+                    daysToCut,
+                    newVacationBalance,
+                    newCutBalance,
+                    vacationTotal,
+                    accumulatedVacation
+                } = currentVacationCalculation;
+                
+                // تأكيد من المستخدم
+                if (confirm(`هل تريد حفظ بيانات الإجازة للموظف ${employeeName}؟\n\n` +
                     `الأيام المستحقة: ${vacationDays} يوم\n` +
-                    `الأيام المقطوعة المضافة: ${Math.max(0, vacationPeriodDays - vacationDays)} يوم`)) {
+                    `الأيام المقطوعة المضافة: ${daysToCut} يوم\n` +
+                    `الرصيد الجديد: ${newVacationBalance.toFixed(1)} يوم\n` +
+                    `الأيام المقطوعة الجديدة: ${newCutBalance} يوم`)) {
                     
-                    const newVacationBalance = vacationBalance - vacationDays;
-                    const daysToCut = Math.max(0, vacationPeriodDays - vacationDays);
-                    const newCutBalance = cutBalance + daysToCut;
+                    // تحديث تاريخ آخر حساب إجازة إلى تاريخ نهاية الإجازة
+                    const employee = employees.find(emp => emp.id === employeeId);
+                    if (employee) {
+                        employee.lastVacationCalculation = vacationEndDate;
+                    }
                     
                     // إضافة سجل لحركة الإجازات
                     addVacationHistoryRecord(
@@ -2358,18 +2469,26 @@
                         daysToCut,
                         newVacationBalance, 
                         newCutBalance,
-                        `صرف إجازة من ${formatDate(vacationStartDate)} إلى ${formatDate(vacationEndDate)} (${vacationPeriodDays} يوم)`
+                        `صرف إجازة من ${formatDate(vacationStartDate)} إلى ${formatDate(vacationEndDate)} (${vacationPeriodDays} يوم) - الإجازات المتراكمة: ${accumulatedVacation.toFixed(1)} يوم`
                     );
                     
-                    alert(`تم تحديث رصيد الموظف:\n` +
-                        `رصيد الإجازات الجديد: ${newVacationBalance} يوم\n` +
-                        `الأيام المقطوعة الجديدة: ${newCutBalance} يوم`);
+                    // إخفاء زر حفظ الإجازة
+                    saveVacationBtn.style.display = 'none';
+                    
+                    // إعادة تعيين المتغير المؤقت
+                    currentVacationCalculation = null;
+                    
+                    alert(`تم حفظ بيانات الإجازة بنجاح:\n` +
+                        `الموظف: ${employeeName}\n` +
+                        `الأيام المستحقة: ${vacationDays} يوم\n` +
+                        `القيمة المالية: ${formatNumber(vacationTotal)} د.ك\n` +
+                        `الرصيد الجديد: ${newVacationBalance.toFixed(1)} يوم\n` +
+                        `الأيام المقطوعة الجديدة: ${newCutBalance} يوم\n` +
+                        `تاريخ آخر إجازة: ${formatDate(vacationEndDate)}`);
                     
                     // تحديث عرض الموظفين
                     loadEmployees();
                 }
-                
-                vacationResults.classList.add('show');
             }
             
             // دالة حفظ بيانات الموظفين
