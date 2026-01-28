@@ -43,7 +43,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -51,7 +51,7 @@
         header {
             background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
             color: white;
-            padding: 20px 0;
+            padding: 15px 0;
             text-align: center;
             border-radius: 0 0 20px 20px;
             box-shadow: var(--shadow);
@@ -67,12 +67,12 @@
         }
 
         .logo-img {
-            width: 60px;
-            height: 60px;
-            border-radius: 10px;
+            width: 30px; /* تصغير حجم الشعار 50% */
+            height: 30px;
+            border-radius: 50%; /* جعل الشعار دائري تماماً */
             object-fit: cover;
-            border: 3px solid white;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .header-content {
@@ -194,7 +194,7 @@
         }
 
         .employee-row {
-            grid-template-columns: 92px 0.8fr 160px 100px 80px 100px 80px 100px 100px 100px 110px;
+            grid-template-columns: 92px 0.8fr 160px 100px 80px 100px 80px 100px 100px 100px 120px 110px;
             align-items: center;
             gap: 10px;
         }
@@ -795,6 +795,52 @@
             direction: rtl;
         }
 
+        /* علامة مائية للشعار في PDF */
+        .watermark {
+            position: absolute;
+            opacity: 0.03; /* شفافية عالية جداً */
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* تنسيقات الشعار في PDF */
+        .pdf-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #D8334A;
+            object-fit: cover;
+        }
+
+        /* حالة الموظف */
+        .employee-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-suspended {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-terminated {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-resigned {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -819,6 +865,11 @@
                 top: auto;
                 transform: none;
                 margin-bottom: 15px;
+            }
+            
+            .logo-img {
+                width: 40px;
+                height: 40px;
             }
             
             header h1 {
@@ -920,6 +971,15 @@
                         <input type="date" id="employeeHireDate">
                     </div>
                     <div class="input-group">
+                        <label for="employeeStatus">حالة الموظف</label>
+                        <select id="employeeStatus">
+                            <option value="active">مستمر بالعمل</option>
+                            <option value="suspended">موقوف عن العمل</option>
+                            <option value="terminated">تم إنهاء خدماته</option>
+                            <option value="resigned">مستقيل</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
                         <label for="employeeBasicSalary">الراتب الأساسي</label>
                         <input type="number" id="employeeBasicSalary" placeholder="الراتب">
                     </div>
@@ -937,15 +997,15 @@
                     </div>
                     <div class="input-group">
                         <label for="employeeVacationDays">رصيد أيام الإجازات</label>
-                        <input type="number" id="employeeVacationDays" placeholder="الإجازة" value="30">
+                        <input type="number" id="employeeVacationDays" placeholder="الإجازة" value="30" step="0.001">
                     </div>
                     <div class="input-group">
                         <label for="employeeUsedDays">الأيام المستنفذة</label>
-                        <input type="number" id="employeeUsedDays" placeholder="المستنفذة" value="0">
+                        <input type="number" id="employeeUsedDays" placeholder="المستنفذة" value="0" step="0.001">
                     </div>
                     <div class="input-group">
                         <label for="employeeCutDays">الأيام المقطوعة</label>
-                        <input type="number" id="employeeCutDays" placeholder="المقطوعة" value="0">
+                        <input type="number" id="employeeCutDays" placeholder="المقطوعة" value="0" step="0.001">
                     </div>
                     <div class="input-group">
                         <label>&nbsp;</label>
@@ -964,6 +1024,7 @@
                             <th style="width: 90px;">الرقم الوظيفي</th>
                             <th>اسم الموظف</th>
                             <th style="width: 120px;">تاريخ التعيين</th>
+                            <th style="width: 100px;">الحالة</th>
                             <th style="width: 110px;">الراتب الأساسي</th>
                             <th style="width: 90px;">بدل السكن</th>
                             <th style="width: 100px;">بدل المواصلات</th>
@@ -1012,10 +1073,6 @@
                         <input type="date" id="endDate">
                     </div>
                     <div class="input-group">
-                        <label for="excessDays">الأيام المقطوعة</label>
-                        <input type="number" id="excessDays" placeholder="عدد الأيام">
-                    </div>
-                    <div class="input-group">
                         <label for="terminationType">نوع إنهاء الخدمة</label>
                         <select id="terminationType">
                             <option value="resignation">استقالة</option>
@@ -1047,6 +1104,9 @@
             <div class="action-buttons">
                 <button class="btn btn-pulse" id="calculateEndService">
                     <i class="fas fa-calculator"></i> حساب مستحقات نهاية الخدمة
+                </button>
+                <button class="btn btn-success" id="saveEndService" style="display: none;">
+                    <i class="fas fa-save"></i> حفظ نهاية الخدمة
                 </button>
                 <button class="btn btn-success" id="exportPDF">
                     <i class="fas fa-file-pdf"></i> تصدير إلى PDF
@@ -1108,7 +1168,7 @@
                         <td class="details" id="resultFirstPeriodDetails"></td>
                     </tr>
                     <tr>
-                        <td class="description">مستحقات السنوات بعد الخامسة (30 يوم/سنة):</td>
+                        <td class="description">مستحقات السنوات بعد الخامسة (راتب شهر/سنة):</td>
                         <td class="value" id="resultLaterPeriod">0 د.ك</td>
                         <td class="details" id="resultLaterPeriodDetails"></td>
                     </tr>
@@ -1129,7 +1189,7 @@
                     </tr>
                     <tr>
                         <td class="description">خصم الأيام المقطوعة:</td>
-                        <td class="value" id="resultExcessDeduction">0 د.ك</td>
+                        <td class="value" id="resultExcessDeduction">0 يوم</td>
                         <td class="details" id="resultExcessDetails"></td>
                     </tr>
                     <tr>
@@ -1149,7 +1209,7 @@
                     </tr>
                     <tr>
                         <td class="description">إجمالي المستحقات:</td>
-                        <td class="value" id="resultTotalAll">0 د.ك</td>
+                        <td class="value" id="resultTotalAll" style="font-size: 1.2rem; color: var(--primary-red);">0 د.ك</td>
                         <td class="details">-</td>
                     </tr>
                 </table>
@@ -1181,6 +1241,7 @@
                 <div class="calculation-steps">
                     <p><strong>ملاحظة:</strong> سيتم حساب أيام الإجازة تلقائياً بناءً على رصيد الإجازات للموظف وتواريخ بداية ونهاية الإجازة.</p>
                     <p><strong>معلومات:</strong> في حساب الإجازات يتم صرف رصيد الإجازة المستحق فقط، والأيام المقطوعة ستتم محاسبتها عند نهاية الخدمة.</p>
+                    <p><strong>ملاحظة هامة:</strong> يتم حساب كسور الشهر في الإجازات (2.5 يوم لكل شهر كامل، وأقل من الشهر يتم حسابه بنسبة 2.5 يوم ÷ 30 يوم × عدد الأيام الفعلية).</p>
                 </div>
             </div>
 
@@ -1247,7 +1308,7 @@
                     </tr>
                     <tr>
                         <td class="description">إجمالي مستحقات الإجازة:</td>
-                        <td class="value" id="vacationTotal">0 د.ك</td>
+                        <td class="value" id="vacationTotal" style="font-size: 1.2rem; color: var(--primary-red);">0 د.ك</td>
                         <td class="details">-</td>
                     </tr>
                     <tr>
@@ -1441,11 +1502,12 @@
 
         <!-- PDF Template لكشف حساب نهاية الخدمة -->
         <div id="pdf-template" class="pdf-template">
+            <!-- علامات مائية للشعار -->
+            <div id="watermarks-container"></div>
+            
             <div class="pdf-header" style="padding: 5px; margin-bottom: 10px; padding-left: 30px;">
                 <div class="pdf-header-row" style="text-align: center;">
                     <div style="text-align: center; margin-bottom: 10px;">
-                        <img src="https://i.postimg.cc/3xZmVcrP/YASR.jpg" alt="شعار الشركة" 
-                             style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #D8334A; margin-bottom: 5px; margin: 0 auto 5px; display: block;">
                         <h2 style="color: #D8334A; margin: 0; font-size: 18px;">
                             نظام حساب مستحقات الموظفين
                         </h2>
@@ -1479,19 +1541,20 @@
                 </tbody>
             </table>
             
-            <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #333; text-align: center; font-size: 11px; color: #666;">
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #333; text-align: center; font-size: 9px; color: #666;">
                 <p>تم إنشاء هذا الكشف بواسطة نظام حساب مستحقات الموظفين - قانون العمل الكويتي</p>
-                <p>© 2026 - Yasser Elkhateeb - 67011143</p>
+                <p style="font-size: 8px;">© 2026 - Yasser Elkhateeb - 67011143</p>
             </div>
         </div>
 
         <!-- PDF Template لكشف حساب الإجازة -->
         <div id="pdf-vacation-template" class="pdf-template">
+            <!-- علامات مائية للشعار -->
+            <div id="watermarks-vacation-container"></div>
+            
             <div class="pdf-header" style="padding: 5px; margin-bottom: 10px; padding-left: 30px;">
                 <div class="pdf-header-row" style="text-align: center;">
                     <div style="text-align: center; margin-bottom: 10px;">
-                        <img src="https://i.postimg.cc/3xZmVcrP/YASR.jpg" alt="شعار الشركة" 
-                             style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #D8334A; margin-bottom: 5px; margin: 0 auto 5px; display: block;">
                         <h2 style="color: #D8334A; margin: 0; font-size: 18px;">
                             نظام حساب مستحقات الموظفين
                         </h2>
@@ -1525,19 +1588,20 @@
                 </tbody>
             </table>
             
-            <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #333; text-align: center; font-size: 11px; color: #666;">
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #333; text-align: center; font-size: 9px; color: #666;">
                 <p>تم إنشاء هذا الكشف بواسطة نظام حساب مستحقات الموظفين - قانون العمل الكويتي</p>
-                <p>© 2026 - Yasser Elkhateeb - 67011143</p>
+                <p style="font-size: 8px;">© 2026 - Yasser Elkhateeb - 67011143</p>
             </div>
         </div>
 
         <!-- PDF Template لتقرير حركة الإجازات -->
         <div id="pdf-vacation-history-template" class="pdf-template">
+            <!-- علامات مائية للشعار -->
+            <div id="watermarks-history-container"></div>
+            
             <div class="pdf-header" style="padding: 5px; margin-bottom: 10px; padding-left: 30px;">
                 <div class="pdf-header-row" style="text-align: center;">
                     <div style="text-align: center; margin-bottom: 10px;">
-                        <img src="https://i.postimg.cc/3xZmVcrP/YASR.jpg" alt="شعار الشركة" 
-                             style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid #D8334A; margin-bottom: 5px; margin: 0 auto 5px; display: block;">
                         <h2 style="color: #D8334A; margin: 0; font-size: 18px;">
                             نظام حساب مستحقات الموظفين
                         </h2>
@@ -1578,9 +1642,9 @@
                 </tbody>
             </table>
             
-            <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #333; text-align: center; font-size: 11px; color: #666;">
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #333; text-align: center; font-size: 9px; color: #666;">
                 <p>تم إنشاء هذا التقرير بواسطة نظام حساب مستحقات الموظفين - قانون العمل الكويتي</p>
-                <p>© 2026 - Yasser Elkhateeb - 67011143</p>
+                <p style="font-size: 8px;">© 2026 - Yasser Elkhateeb - 67011143</p>
             </div>
         </div>
     </div>
@@ -1627,6 +1691,9 @@
             // متغيرات مؤقتة لحساب الإجازة
             let currentVacationCalculation = null;
             
+            // متغيرات مؤقتة لحساب نهاية الخدمة
+            let currentEndServiceCalculation = null;
+            
             // عناصر التحكم
             const navButtons = document.querySelectorAll('.nav-btn');
             const screens = document.querySelectorAll('.screen');
@@ -1637,6 +1704,7 @@
             const vacationEmployeeSearch = document.getElementById('vacationEmployeeSearch');
             const vacationEmployeeSearchResults = document.getElementById('vacationEmployeeSearchResults');
             const calculateEndServiceBtn = document.getElementById('calculateEndService');
+            const saveEndServiceBtn = document.getElementById('saveEndService');
             const calculateVacationBtn = document.getElementById('calculateVacation');
             const saveVacationBtn = document.getElementById('saveVacation');
             const exportPDFBtn = document.getElementById('exportPDF');
@@ -1728,6 +1796,7 @@
             
             addEmployeeBtn.addEventListener('click', addOrUpdateEmployee);
             calculateEndServiceBtn.addEventListener('click', calculateEndService);
+            saveEndServiceBtn.addEventListener('click', saveEndService);
             calculateVacationBtn.addEventListener('click', calculateVacation);
             saveVacationBtn.addEventListener('click', saveVacation);
             exportPDFBtn.addEventListener('click', exportPDF);
@@ -1810,7 +1879,7 @@
                 return `${year}-${month}-${day}`;
             }
             
-            // دالة حساب عدد أيام الإجازة المتراكمة حسب قانون العمل الكويتي
+            // دالة حساب عدد أيام الإجازة المتراكمة حسب قانون العمل الكويتي (مع كسور الشهر)
             function calculateAccumulatedVacation(hireDate, calculationDate, lastVacationDate = null) {
                 if (!hireDate || !calculationDate) return 0;
                 
@@ -1826,23 +1895,56 @@
                     startDate = lastVacation;
                 }
                 
-                // حساب الفرق بالشهور
-                let years = calc.getFullYear() - startDate.getFullYear();
-                let months = calc.getMonth() - startDate.getMonth();
+                // حساب الفرق بالأيام الكاملة
+                const timeDiff = calc.getTime() - startDate.getTime();
+                const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
                 
-                if (months < 0) {
-                    years--;
-                    months += 12;
+                // حساب عدد الأشهر الكاملة
+                let months = Math.floor(daysDiff / 30);
+                let remainingDays = daysDiff % 30;
+                
+                // حساب الأيام لكل شهر كامل
+                let totalDays = months * 2.5;
+                
+                // حساب الأيام لبقية الأيام (كسور الشهر)
+                if (remainingDays > 0) {
+                    // 2.5 يوم ÷ 30 يوم = 0.083333 يوم لكل يوم
+                    totalDays += (remainingDays * 2.5) / 30;
                 }
                 
-                // كل سنة = 30 يوم إجازة
-                let totalDays = years * 30;
+                // تقريب إلى 3 منازل عشرية
+                return Math.round(totalDays * 1000) / 1000;
+            }
+            
+            // دالة حساب مدة الخدمة الصافية (بعد خصم الأيام المقطوعة)
+            function calculateNetServicePeriod(startDate, endDate, cutDays) {
+                if (!startDate || !endDate) return { years: 0, months: 0, days: 0, totalMonths: 0 };
                 
-                // كل شهر = 2.5 يوم إجازة
-                totalDays += months * 2.5;
+                const start = new Date(startDate);
+                const end = new Date(endDate);
                 
-                // تقريب إلى أقرب نصف يوم
-                return Math.round(totalDays * 2) / 2;
+                // حساب الفرق بالأيام الكاملة
+                const timeDiff = end.getTime() - start.getTime();
+                let totalDays = Math.floor(timeDiff / (1000 * 3600 * 24)) + 1; // +1 لاحتساب يوم البداية
+                
+                // خصم الأيام المقطوعة
+                totalDays = Math.max(0, totalDays - cutDays);
+                
+                // تحويل الأيام إلى سنوات وأشهر وأيام
+                let years = Math.floor(totalDays / 365);
+                let remainingDays = totalDays % 365;
+                let months = Math.floor(remainingDays / 30);
+                let days = remainingDays % 30;
+                
+                // إذا كانت الأيام المتبقية أكثر من 15 يوم، نحسبها كشهر كامل
+                if (days > 15) {
+                    months++;
+                    days = 0;
+                }
+                
+                const totalMonths = years * 12 + months;
+                
+                return { years, months, days, totalMonths };
             }
             
             // دالة إضافة أو تعديل موظف
@@ -1850,13 +1952,14 @@
                 const employeeId = document.getElementById('employeeId').value.trim();
                 const employeeName = document.getElementById('employeeName').value.trim();
                 const employeeHireDate = document.getElementById('employeeHireDate').value;
+                const employeeStatus = document.getElementById('employeeStatus').value;
                 const employeeBasicSalary = parseFormattedNumber(document.getElementById('employeeBasicSalary').value) || 0;
                 const employeeHousing = parseFormattedNumber(document.getElementById('employeeHousing').value) || 0;
                 const employeeTransport = parseFormattedNumber(document.getElementById('employeeTransport').value) || 0;
                 const employeeOther = parseFormattedNumber(document.getElementById('employeeOther').value) || 0;
-                const employeeVacationDays = parseInt(document.getElementById('employeeVacationDays').value) || 0;
-                const employeeUsedDays = parseInt(document.getElementById('employeeUsedDays').value) || 0;
-                const employeeCutDays = parseInt(document.getElementById('employeeCutDays').value) || 0;
+                const employeeVacationDays = parseFloat(document.getElementById('employeeVacationDays').value) || 0;
+                const employeeUsedDays = parseFloat(document.getElementById('employeeUsedDays').value) || 0;
+                const employeeCutDays = parseFloat(document.getElementById('employeeCutDays').value) || 0;
                 
                 if (!employeeId || !employeeName || !employeeHireDate) {
                     alert('يرجى إدخال البيانات الأساسية (الرقم الوظيفي، الاسم، وتاريخ التعيين)');
@@ -1875,6 +1978,7 @@
                         id: employeeId,
                         name: employeeName,
                         hireDate: employeeHireDate,
+                        status: employeeStatus,
                         basicSalary: employeeBasicSalary,
                         housing: employeeHousing,
                         transport: employeeTransport,
@@ -1883,6 +1987,9 @@
                         usedDays: employeeUsedDays,
                         cutDays: employeeCutDays,
                         lastVacationCalculation: null,
+                        endServiceCalculated: false,
+                        endServiceDate: null,
+                        endServiceType: null,
                         vacationHistory: []
                     };
                     
@@ -1903,6 +2010,7 @@
                         id: employeeId,
                         name: employeeName,
                         hireDate: employeeHireDate,
+                        status: employeeStatus,
                         basicSalary: employeeBasicSalary,
                         housing: employeeHousing,
                         transport: employeeTransport,
@@ -1911,6 +2019,9 @@
                         usedDays: employeeUsedDays,
                         cutDays: employeeCutDays,
                         lastVacationCalculation: oldEmployee.lastVacationCalculation,
+                        endServiceCalculated: oldEmployee.endServiceCalculated,
+                        endServiceDate: oldEmployee.endServiceDate,
+                        endServiceType: oldEmployee.endServiceType,
                         vacationHistory: oldEmployee.vacationHistory || []
                     };
                     
@@ -1932,6 +2043,7 @@
                 document.getElementById('employeeId').value = '';
                 document.getElementById('employeeName').value = '';
                 document.getElementById('employeeHireDate').value = '';
+                document.getElementById('employeeStatus').value = 'active';
                 document.getElementById('employeeBasicSalary').value = '';
                 document.getElementById('employeeHousing').value = '';
                 document.getElementById('employeeTransport').value = '';
@@ -1948,23 +2060,46 @@
                 employeesList.innerHTML = '';
                 
                 if (employees.length === 0) {
-                    employeesList.innerHTML = '<tr><td colspan="11" style="text-align: center;">لا توجد بيانات موظفين</td></tr>';
+                    employeesList.innerHTML = '<tr><td colspan="12" style="text-align: center;">لا توجد بيانات موظفين</td></tr>';
                     return;
                 }
                 
                 employees.forEach((employee, index) => {
+                    let statusText = '';
+                    let statusClass = '';
+                    
+                    switch(employee.status) {
+                        case 'active':
+                            statusText = 'مستمر بالعمل';
+                            statusClass = 'status-active';
+                            break;
+                        case 'suspended':
+                            statusText = 'موقوف عن العمل';
+                            statusClass = 'status-suspended';
+                            break;
+                        case 'terminated':
+                            statusText = 'تم إنهاء خدماته';
+                            statusClass = 'status-terminated';
+                            break;
+                        case 'resigned':
+                            statusText = 'مستقيل';
+                            statusClass = 'status-resigned';
+                            break;
+                    }
+                    
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${employee.id}</td>
                         <td>${employee.name}</td>
                         <td>${formatDate(employee.hireDate)}</td>
+                        <td><span class="employee-status ${statusClass}">${statusText}</span></td>
                         <td>${employee.basicSalary > 0 ? formatNumber(employee.basicSalary) + ' د.ك' : ''}</td>
                         <td>${employee.housing > 0 ? formatNumber(employee.housing) + ' د.ك' : ''}</td>
                         <td>${employee.transport > 0 ? formatNumber(employee.transport) + ' د.ك' : ''}</td>
                         <td>${employee.other > 0 ? formatNumber(employee.other) + ' د.ك' : ''}</td>
-                        <td>${employee.vacationDays > 0 ? employee.vacationDays + ' يوم' : ''}</td>
-                        <td>${employee.usedDays > 0 ? employee.usedDays + ' يوم' : ''}</td>
-                        <td>${employee.cutDays > 0 ? employee.cutDays + ' يوم' : ''}</td>
+                        <td>${employee.vacationDays > 0 ? employee.vacationDays.toFixed(3) + ' يوم' : ''}</td>
+                        <td>${employee.usedDays > 0 ? employee.usedDays.toFixed(3) + ' يوم' : ''}</td>
+                        <td>${employee.cutDays > 0 ? employee.cutDays.toFixed(3) + ' يوم' : ''}</td>
                         <td>
                             <button class="btn btn-warning" onclick="editEmployee(${index})">
                                 <i class="fas fa-edit"></i> تعديل
@@ -1985,6 +2120,7 @@
                 document.getElementById('employeeId').value = employee.id;
                 document.getElementById('employeeName').value = employee.name;
                 document.getElementById('employeeHireDate').value = employee.hireDate;
+                document.getElementById('employeeStatus').value = employee.status || 'active';
                 document.getElementById('employeeBasicSalary').value = employee.basicSalary > 0 ? formatNumber(employee.basicSalary) : '';
                 document.getElementById('employeeHousing').value = employee.housing > 0 ? formatNumber(employee.housing) : '';
                 document.getElementById('employeeTransport').value = employee.transport > 0 ? formatNumber(employee.transport) : '';
@@ -2060,41 +2196,31 @@
                 if (!employee) return;
                 
                 if (screenType === 'end-service') {
-                    // لا نحتاج لملء أي حقول أخرى هنا
+                    // التحقق مما إذا كان الموظف قد تم حساب نهاية خدمته مسبقاً
+                    if (employee.endServiceCalculated) {
+                        alert('هذا الموظف تم حساب نهاية خدمته مسبقاً ولا يمكن إعادة الحساب.');
+                        document.getElementById('employeeSearch').value = '';
+                        document.getElementById('employeeSelect').value = '';
+                        return;
+                    }
+                    
+                    // التحقق من حالة الموظف
+                    if (employee.status === 'terminated' || employee.status === 'resigned') {
+                        alert('هذا الموظف تم إنهاء خدمته/استقال مسبقاً.');
+                    }
                 } else if (screenType === 'vacation') {
+                    // التحقق مما إذا كان الموظف قد تم حساب نهاية خدمته مسبقاً
+                    if (employee.endServiceCalculated) {
+                        alert('هذا الموظف تم حساب نهاية خدمته مسبقاً ولا يمكن حساب إجازة له.');
+                        document.getElementById('vacationEmployeeSearch').value = '';
+                        document.getElementById('vacationEmployeeSelect').value = '';
+                        return;
+                    }
+                    
                     // عرض رصيد الإجازات في حقل البحث
                     const searchInput = document.getElementById('vacationEmployeeSearch');
-                    searchInput.value = `${employee.id} - ${employee.name} (رصيد الإجازات: ${employee.vacationDays} يوم، الأيام المستنفذة: ${employee.usedDays} يوم، الأيام المقطوعة: ${employee.cutDays} يوم)`;
+                    searchInput.value = `${employee.id} - ${employee.name} (رصيد الإجازات: ${employee.vacationDays.toFixed(3)} يوم، الأيام المستنفذة: ${employee.usedDays.toFixed(3)} يوم، الأيام المقطوعة: ${employee.cutDays.toFixed(3)} يوم)`;
                 }
-            }
-            
-            // دالة حساب مدة الخدمة من التاريخين
-            function calculateServicePeriod(startDate, endDate) {
-                if (!startDate || !endDate) return { years: 0, months: 0, days: 0, totalMonths: 0 };
-                
-                const start = new Date(startDate);
-                const end = new Date(endDate);
-                
-                // حساب الفرق بالشهور والأيام
-                let years = end.getFullYear() - start.getFullYear();
-                let months = end.getMonth() - start.getMonth();
-                let days = end.getDate() - start.getDate();
-                
-                if (days < 0) {
-                    months--;
-                    // الحصول على عدد أيام الشهر السابق
-                    const prevMonth = new Date(end.getFullYear(), end.getMonth(), 0);
-                    days += prevMonth.getDate();
-                }
-                
-                if (months < 0) {
-                    years--;
-                    months += 12;
-                }
-                
-                const totalMonths = years * 12 + months;
-                
-                return { years, months, days, totalMonths };
             }
             
             // دالة حساب إجمالي الراتب حسب الإعدادات
@@ -2166,7 +2292,6 @@
                 const employeeId = document.getElementById('employeeSelect').value;
                 const endDate = document.getElementById('endDate').value;
                 const terminationType = document.getElementById('terminationType').value;
-                const excessDays = parseInt(document.getElementById('excessDays').value) || 0;
                 const normalOvertime = parseInt(document.getElementById('normalOvertime').value) || 0;
                 const fridayOvertime = parseInt(document.getElementById('fridayOvertime').value) || 0;
                 const holidayOvertime = parseInt(document.getElementById('holidayOvertime').value) || 0;
@@ -2182,16 +2307,25 @@
                     return;
                 }
                 
+                // التحقق مما إذا كان الموظف قد تم حساب نهاية خدمته مسبقاً
+                if (employee.endServiceCalculated) {
+                    alert('هذا الموظف تم حساب نهاية خدمته مسبقاً ولا يمكن إعادة الحساب.');
+                    return;
+                }
+                
                 const basicSalary = employee.basicSalary;
                 const housing = employee.housing || 0;
                 const transport = employee.transport || 0;
                 const other = employee.other || 0;
-                const vacationDays = employee.vacationDays;
+                const vacationDays = employee.vacationDays || 0;
+                const cutDays = employee.cutDays || 0;
                 const startDate = employee.hireDate;
                 const deductions = 0;
                 
                 const totalSalary = calculateTotalSalary(employee);
-                const servicePeriod = calculateServicePeriod(startDate, endDate);
+                
+                // حساب مدة الخدمة الصافية بعد خصم الأيام المقطوعة
+                const servicePeriod = calculateNetServicePeriod(startDate, endDate, cutDays);
                 
                 let firstPeriod = 0;
                 let laterPeriod = 0;
@@ -2234,8 +2368,8 @@
                 // حساب المستحقات للسنوات الخمس الأولى (15 يوم/سنة)
                 firstPeriod = dayValue * 15 * firstFiveYears;
                 
-                // حساب المستحقات للسنوات بعد الخامسة (30 يوم/سنة)
-                laterPeriod = dayValue * 30 * remainingYears;
+                // حساب المستحقات للسنوات بعد الخامسة (راتب شهر/سنة)
+                laterPeriod = totalSalary * remainingYears;
                 
                 // حساب مستحقات الأشهر الإضافية (بعد السنوات الكاملة)
                 if (servicePeriod.months > 0) {
@@ -2246,9 +2380,6 @@
                 if (servicePeriod.days > 0) {
                     daysAmount = dayValue * servicePeriod.days;
                 }
-                
-                // حساب خصم الأيام المقطوعة (باستخدام الراتب اليومي)
-                const excessDeduction = dayValue * excessDays;
                 
                 // حساب مستحقات الإجازات (باستخدام الراتب اليومي)
                 const vacationAmount = dayValue * vacationDays;
@@ -2267,10 +2398,12 @@
                 const endServiceAmount = endServiceAmountBeforeRatio * entitlementRatio;
                 
                 // حساب الإجمالي النهائي
-                const totalAll = endServiceAmount - excessDeduction + vacationAmount + overtimeAmount - deductions;
+                const totalAll = endServiceAmount + vacationAmount + overtimeAmount - deductions;
                 
                 // عرض النتائج في الجدول الرئيسي
-                document.getElementById('calcDetails').innerHTML = calcDetails;
+                document.getElementById('calcDetails').innerHTML = calcDetails + 
+                    `• الأيام المقطوعة: ${cutDays.toFixed(3)} يوم<br>` +
+                    `• مدة الخدمة الصافية: ${servicePeriod.years} سنة و ${servicePeriod.months} شهر و ${servicePeriod.days} يوم`;
                 document.getElementById('resultSalary').textContent = formatNumber(basicSalary) + ' د.ك';
                 document.getElementById('resultHousing').textContent = formatNumber(housing) + ' د.ك';
                 document.getElementById('resultTransport').textContent = formatNumber(transport) + ' د.ك';
@@ -2281,7 +2414,7 @@
                 document.getElementById('resultServicePeriod').textContent = 
                     servicePeriod.years + ' سنة و ' + servicePeriod.months + ' شهر و ' + servicePeriod.days + ' يوم';
                 document.getElementById('resultServiceDetails').textContent = 
-                    `إجمالي ${servicePeriod.years} سنة و ${servicePeriod.months} شهر و ${servicePeriod.days} يوم`;
+                    `إجمالي ${servicePeriod.years} سنة و ${servicePeriod.months} شهر و ${servicePeriod.days} يوم (بعد خصم ${cutDays.toFixed(3)} يوم مقطوعة)`;
                 document.getElementById('resultTerminationType').textContent = 
                     terminationType === 'resignation' ? 'استقالة' : 
                     terminationType === 'employer' ? 'إنهاء من صاحب العمل' : 'وفاة أو عجز كلي';
@@ -2290,7 +2423,7 @@
                     `${firstFiveYears} سنة × ${formatNumber(dayValue)} × 15 يوم`;
                 document.getElementById('resultLaterPeriod').textContent = formatNumber(laterPeriod) + ' د.ك';
                 document.getElementById('resultLaterPeriodDetails').textContent = 
-                    `${remainingYears} سنة × ${formatNumber(dayValue)} × 30 يوم`;
+                    `${remainingYears} سنة × ${formatNumber(totalSalary)} (راتب شهر/سنة)`;
                 document.getElementById('resultMonthsAmount').textContent = formatNumber(monthsAmount) + ' د.ك';
                 document.getElementById('resultMonthsDetails').textContent = 
                     `${servicePeriod.months} شهر × (${formatNumber(totalSalary)} ÷ 12)`;
@@ -2298,19 +2431,116 @@
                 document.getElementById('resultDaysDetails').textContent = 
                     `${servicePeriod.days} يوم × ${formatNumber(dayValue)}`;
                 document.getElementById('resultEntitlementRatio').textContent = (entitlementRatio * 100).toFixed(0) + '%';
-                document.getElementById('resultExcessDeduction').textContent = formatNumber(excessDeduction) + ' د.ك';
+                document.getElementById('resultExcessDeduction').textContent = cutDays.toFixed(3) + ' يوم';
                 document.getElementById('resultExcessDetails').textContent = 
-                    `${excessDays} يوم × ${formatNumber(dayValue)} د.ك`;
+                    `${cutDays.toFixed(3)} يوم مقطوعة (تخصم من مدة الخدمة)`;
                 document.getElementById('resultVacationAmount').textContent = formatNumber(vacationAmount) + ' د.ك';
                 document.getElementById('resultVacationDetails').textContent = 
-                    `${vacationDays} يوم × ${formatNumber(dayValue)} د.ك`;
+                    `${vacationDays.toFixed(3)} يوم × ${formatNumber(dayValue)} د.ك`;
                 document.getElementById('resultOvertimeAmount').textContent = formatNumber(overtimeAmount) + ' د.ك';
                 document.getElementById('resultOvertimeDetails').textContent = 
                     `${normalOvertime + fridayOvertime + holidayOvertime} ساعة إضافية`;
                 document.getElementById('resultDeductions').textContent = formatNumber(deductions) + ' د.ك';
                 document.getElementById('resultTotalAll').textContent = formatNumber(Math.max(0, totalAll)) + ' د.ك';
                 
+                // تخزين بيانات الحساب المؤقتة
+                currentEndServiceCalculation = {
+                    employeeId: employeeId,
+                    employeeName: employee.name,
+                    endDate: endDate,
+                    terminationType: terminationType,
+                    servicePeriod: servicePeriod,
+                    totalSalary: totalSalary,
+                    dayValue: dayValue,
+                    endServiceAmount: endServiceAmount,
+                    cutDays: cutDays,
+                    vacationAmount: vacationAmount,
+                    overtimeAmount: overtimeAmount,
+                    totalAll: totalAll
+                };
+                
+                // إظهار زر حفظ نهاية الخدمة
+                saveEndServiceBtn.style.display = 'inline-block';
+                
                 endServiceResults.classList.add('show');
+            }
+            
+            // دالة حفظ نهاية الخدمة
+            function saveEndService() {
+                if (!currentEndServiceCalculation) {
+                    alert('لا توجد بيانات نهاية خدمة لحفظها. يرجى حساب نهاية الخدمة أولاً.');
+                    return;
+                }
+                
+                const { 
+                    employeeId, 
+                    employeeName, 
+                    endDate, 
+                    terminationType,
+                    servicePeriod,
+                    totalSalary,
+                    dayValue,
+                    endServiceAmount,
+                    cutDays,
+                    vacationAmount,
+                    overtimeAmount,
+                    totalAll
+                } = currentEndServiceCalculation;
+                
+                // تأكيد من المستخدم
+                if (confirm(`هل تريد حفظ بيانات نهاية الخدمة للموظف ${employeeName}؟\n\n` +
+                    `تاريخ إنهاء الخدمة: ${formatDate(endDate)}\n` +
+                    `مدة الخدمة الصافية: ${servicePeriod.years} سنة و ${servicePeriod.months} شهر و ${servicePeriod.days} يوم (بعد خصم ${cutDays} يوم مقطوعة)\n` +
+                    `إجمالي المستحقات: ${formatNumber(totalAll)} د.ك\n\n` +
+                    `بعد الحفظ، لن يتمكن الموظف من حساب إجازات أو إعادة حساب نهاية الخدمة.`)) {
+                    
+                    const employee = employees.find(emp => emp.id === employeeId);
+                    if (employee) {
+                        // تحديث حالة الموظف
+                        if (terminationType === 'resignation') {
+                            employee.status = 'resigned';
+                        } else if (terminationType === 'employer' || terminationType === 'death') {
+                            employee.status = 'terminated';
+                        }
+                        
+                        // تحديث بيانات نهاية الخدمة
+                        employee.endServiceCalculated = true;
+                        employee.endServiceDate = endDate;
+                        employee.endServiceType = terminationType;
+                        
+                        // إعادة تعيين رصيد الإجازات بعد صرفها
+                        employee.vacationDays = 0;
+                        employee.usedDays = (employee.usedDays || 0) + employee.vacationDays;
+                        
+                        // إضافة سجل لحركة نهاية الخدمة
+                        addVacationHistoryRecord(
+                            employeeId, 
+                            'نهاية خدمة', 
+                            employee.vacationDays, 
+                            0,
+                            0, 
+                            employee.cutDays,
+                            `نهاية خدمة - نوع: ${terminationType === 'resignation' ? 'استقالة' : terminationType === 'employer' ? 'إنهاء من صاحب العمل' : 'وفاة أو عجز كلي'} - الإجمالي: ${formatNumber(totalAll)} د.ك`
+                        );
+                    }
+                    
+                    // إخفاء زر حفظ نهاية الخدمة
+                    saveEndServiceBtn.style.display = 'none';
+                    
+                    // إعادة تعيين المتغير المؤقت
+                    currentEndServiceCalculation = null;
+                    
+                    alert(`تم حفظ بيانات نهاية الخدمة بنجاح:\n` +
+                        `الموظف: ${employeeName}\n` +
+                        `تاريخ إنهاء الخدمة: ${formatDate(endDate)}\n` +
+                        `نوع إنهاء الخدمة: ${terminationType === 'resignation' ? 'استقالة' : terminationType === 'employer' ? 'إنهاء من صاحب العمل' : 'وفاة أو عجز كلي'}\n` +
+                        `مدة الخدمة الصافية: ${servicePeriod.years} سنة و ${servicePeriod.months} شهر و ${servicePeriod.days} يوم (بعد خصم ${cutDays} يوم مقطوعة)\n` +
+                        `إجمالي المستحقات: ${formatNumber(totalAll)} د.ك\n` +
+                        `حالة الموظف الجديدة: ${employee.status === 'resigned' ? 'مستقيل' : 'تم إنهاء خدماته'}`);
+                    
+                    // تحديث عرض الموظفين
+                    loadEmployees();
+                }
             }
             
             // دالة حساب مستحقات الإجازة (عرض فقط - لا تحديث للرصيد)
@@ -2330,6 +2560,12 @@
                     return;
                 }
                 
+                // التحقق مما إذا كان الموظف قد تم حساب نهاية خدمته مسبقاً
+                if (employee.endServiceCalculated) {
+                    alert('هذا الموظف تم حساب نهاية خدمته مسبقاً ولا يمكن حساب إجازة له.');
+                    return;
+                }
+                
                 const basicSalary = employee.basicSalary;
                 const housing = employee.housing || 0;
                 const transport = employee.transport || 0;
@@ -2345,7 +2581,7 @@
                 const timeDiff = endDate.getTime() - startDate.getTime();
                 const vacationPeriodDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
                 
-                // حساب الإجازات المتراكمة حتى تاريخ بداية الإجازة
+                // حساب الإجازات المتراكمة حتى تاريخ بداية الإجازة (مع كسور الشهر)
                 const accumulatedVacation = calculateAccumulatedVacation(employee.hireDate, vacationStartDate, lastVacationDate);
                 
                 // حساب الرصيد الكلي (الرصيد الحالي + الإجازات المتراكمة)
@@ -2355,7 +2591,7 @@
                 const vacationDays = Math.min(totalAvailableBalance, vacationPeriodDays);
                 
                 if (vacationDays <= 0) {
-                    alert('لا يوجد رصيد إجازات كافٍ لهذا الموظف. الرصيد الحالي: ' + vacationBalance + ' يوم، الإجازات المتراكمة: ' + accumulatedVacation.toFixed(1) + ' يوم');
+                    alert('لا يوجد رصيد إجازات كافٍ لهذا الموظف. الرصيد الحالي: ' + vacationBalance.toFixed(3) + ' يوم، الإجازات المتراكمة: ' + accumulatedVacation.toFixed(3) + ' يوم');
                     return;
                 }
                 
@@ -2375,19 +2611,19 @@
                 
                 // عرض النتائج
                 document.getElementById('vacationCalcDetails').innerHTML = 
-                    `• الرصيد الحالي: ${vacationBalance} يوم<br>` +
-                    `• الأيام المستنفذة: ${usedDays} يوم<br>` +
-                    `• الأيام المقطوعة: ${cutBalance} يوم<br>` +
+                    `• الرصيد الحالي: ${vacationBalance.toFixed(3)} يوم<br>` +
+                    `• الأيام المستنفذة: ${usedDays.toFixed(3)} يوم<br>` +
+                    `• الأيام المقطوعة: ${cutBalance.toFixed(3)} يوم<br>` +
                     `• آخر تاريخ حساب إجازة: ${lastVacationDate ? formatDate(lastVacationDate) : 'لم يتم أخذ إجازة سابقاً'}<br>` +
-                    `• الإجازات المتراكمة حتى ${formatDate(vacationStartDate)}: ${accumulatedVacation.toFixed(1)} يوم<br>` +
-                    `• الرصيد الكلي المتاح: ${totalAvailableBalance.toFixed(1)} يوم<br>` +
+                    `• الإجازات المتراكمة حتى ${formatDate(vacationStartDate)}: ${accumulatedVacation.toFixed(3)} يوم (باحتساب كسور الشهر)<br>` +
+                    `• الرصيد الكلي المتاح: ${totalAvailableBalance.toFixed(3)} يوم<br>` +
                     `• مدة الإجازة المطلوبة: ${vacationPeriodDays} يوم<br>` +
-                    `• أيام الإجازة المستحقة: ${vacationDays} يوم<br>` +
+                    `• أيام الإجازة المستحقة: ${vacationDays.toFixed(3)} يوم<br>` +
                     `• الراتب اليومي: ${formatNumber(totalSalary)} ÷ ${appSettings.workingDaysPerMonth} = ${formatNumber(dayValue)} د.ك<br>` +
-                    `• الأيام المقطوعة الإضافية: ${daysToCut} يوم<br>` +
+                    `• الأيام المقطوعة الإضافية: ${daysToCut.toFixed(3)} يوم<br>` +
                     `• <strong>ملاحظة:</strong> الأيام المقطوعة سيتم خصمها عند نهاية الخدمة، ولا يتم خصمها في حساب الإجازة.`;
                 
-                document.getElementById('vacationPeriod').textContent = vacationDays + ' يوم';
+                document.getElementById('vacationPeriod').textContent = vacationDays.toFixed(3) + ' يوم';
                 document.getElementById('vacationPeriodDetails').textContent = 
                     `من ${formatDate(vacationStartDate)} إلى ${formatDate(vacationEndDate)}`;
                 document.getElementById('vacationSalary').textContent = formatNumber(basicSalary) + ' د.ك';
@@ -2399,12 +2635,12 @@
                 document.getElementById('vacationDayValueDetails').textContent = 
                     `${formatNumber(totalSalary)} ÷ ${appSettings.workingDaysPerMonth}`;
                 document.getElementById('vacationTotal').textContent = formatNumber(Math.max(0, vacationTotal)) + ' د.ك';
-                document.getElementById('newVacationBalance').textContent = newVacationBalance.toFixed(1) + ' يوم';
+                document.getElementById('newVacationBalance').textContent = newVacationBalance.toFixed(3) + ' يوم';
                 document.getElementById('newVacationBalanceDetails').textContent = 
-                    `الرصيد الكلي (${totalAvailableBalance.toFixed(1)}) - أيام الإجازة (${vacationDays})`;
-                document.getElementById('newCutBalance').textContent = newCutBalance + ' يوم';
+                    `الرصيد الكلي (${totalAvailableBalance.toFixed(3)}) - أيام الإجازة (${vacationDays.toFixed(3)})`;
+                document.getElementById('newCutBalance').textContent = newCutBalance.toFixed(3) + ' يوم';
                 document.getElementById('newCutBalanceDetails').textContent = 
-                    `الأيام المقطوعة الحالية (${cutBalance}) + أيام إضافية (${daysToCut})`;
+                    `الأيام المقطوعة الحالية (${cutBalance.toFixed(3)}) + أيام إضافية (${daysToCut.toFixed(3)})`;
                 
                 // تخزين بيانات الحساب المؤقتة
                 currentVacationCalculation = {
@@ -2450,10 +2686,10 @@
                 
                 // تأكيد من المستخدم
                 if (confirm(`هل تريد حفظ بيانات الإجازة للموظف ${employeeName}؟\n\n` +
-                    `الأيام المستحقة: ${vacationDays} يوم\n` +
-                    `الأيام المقطوعة المضافة: ${daysToCut} يوم\n` +
-                    `الرصيد الجديد: ${newVacationBalance.toFixed(1)} يوم\n` +
-                    `الأيام المقطوعة الجديدة: ${newCutBalance} يوم`)) {
+                    `الأيام المستحقة: ${vacationDays.toFixed(3)} يوم\n` +
+                    `الأيام المقطوعة المضافة: ${daysToCut.toFixed(3)} يوم\n` +
+                    `الرصيد الجديد: ${newVacationBalance.toFixed(3)} يوم\n` +
+                    `الأيام المقطوعة الجديدة: ${newCutBalance.toFixed(3)} يوم`)) {
                     
                     // تحديث تاريخ آخر حساب إجازة إلى تاريخ نهاية الإجازة
                     const employee = employees.find(emp => emp.id === employeeId);
@@ -2469,7 +2705,7 @@
                         daysToCut,
                         newVacationBalance, 
                         newCutBalance,
-                        `صرف إجازة من ${formatDate(vacationStartDate)} إلى ${formatDate(vacationEndDate)} (${vacationPeriodDays} يوم) - الإجازات المتراكمة: ${accumulatedVacation.toFixed(1)} يوم`
+                        `صرف إجازة من ${formatDate(vacationStartDate)} إلى ${formatDate(vacationEndDate)} (${vacationPeriodDays} يوم) - الإجازات المتراكمة: ${accumulatedVacation.toFixed(3)} يوم`
                     );
                     
                     // إخفاء زر حفظ الإجازة
@@ -2480,10 +2716,10 @@
                     
                     alert(`تم حفظ بيانات الإجازة بنجاح:\n` +
                         `الموظف: ${employeeName}\n` +
-                        `الأيام المستحقة: ${vacationDays} يوم\n` +
+                        `الأيام المستحقة: ${vacationDays.toFixed(3)} يوم\n` +
                         `القيمة المالية: ${formatNumber(vacationTotal)} د.ك\n` +
-                        `الرصيد الجديد: ${newVacationBalance.toFixed(1)} يوم\n` +
-                        `الأيام المقطوعة الجديدة: ${newCutBalance} يوم\n` +
+                        `الرصيد الجديد: ${newVacationBalance.toFixed(3)} يوم\n` +
+                        `الأيام المقطوعة الجديدة: ${newCutBalance.toFixed(3)} يوم\n` +
                         `تاريخ آخر إجازة: ${formatDate(vacationEndDate)}`);
                     
                     // تحديث عرض الموظفين
@@ -2590,18 +2826,18 @@
                             <td>${formatDate(record.date)}</td>
                             <td>${record.employeeName}</td>
                             <td>${record.type}</td>
-                            <td>${record.usedDays || 0}</td>
-                            <td>${record.cutDaysAdded || 0}</td>
-                            <td>${record.balanceBefore || 0}</td>
-                            <td>${record.balanceAfter || 0}</td>
-                            <td>${record.cutBalanceBefore || 0}</td>
-                            <td>${record.cutBalanceAfter || 0}</td>
+                            <td>${(record.usedDays || 0).toFixed(3)}</td>
+                            <td>${(record.cutDaysAdded || 0).toFixed(3)}</td>
+                            <td>${(record.balanceBefore || 0).toFixed(3)}</td>
+                            <td>${(record.balanceAfter || 0).toFixed(3)}</td>
+                            <td>${(record.cutBalanceBefore || 0).toFixed(3)}</td>
+                            <td>${(record.cutBalanceAfter || 0).toFixed(3)}</td>
                             <td>${record.notes || ''}</td>
                         `;
                         vacationHistoryTable.appendChild(row);
                     });
                     
-                    reportSummary.textContent = `إجمالي السجلات: ${filteredHistory.length} | إجمالي الأيام المستخدمة: ${totalUsedDays} | إجمالي الأيام المقطوعة المضافة: ${totalCutDaysAdded}`;
+                    reportSummary.textContent = `إجمالي السجلات: ${filteredHistory.length} | إجمالي الأيام المستخدمة: ${totalUsedDays.toFixed(3)} | إجمالي الأيام المقطوعة المضافة: ${totalCutDaysAdded.toFixed(3)}`;
                 }
                 
                 vacationReportResults.classList.add('show');
@@ -2776,6 +3012,86 @@
                 }
             }
             
+            // دالة إنشاء علامات مائية في PDF مع تباعد لا يقل عن 1 سم
+            function createWatermarks(containerId, count = 8) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                
+                container.innerHTML = '';
+                
+                // إعدادات الصفحة (A4 بالبكسل)
+                const pageWidth = 794; // عرض A4 بالنقاط
+                const pageHeight = 1123; // ارتفاع A4 بالنقاط
+                const watermarkSize = 60; // حجم الشعار في العلامة المائية (أصغر قليلاً)
+                
+                // المسافة الدنيا بين العلامات المائية (1 سم ≈ 37.8 بكسل عند 300 DPI)
+                const minDistance = 38; // تقريباً 1 سم
+                
+                // قائمة لمواقع العلامات المائية المضافة
+                const placedWatermarks = [];
+                
+                // محاولة وضع العلامات المائية مع الحفاظ على مسافة كافية
+                for (let i = 0; i < count; i++) {
+                    let attempts = 0;
+                    let validPosition = false;
+                    let left, top;
+                    
+                    // محاولة إيجاد موقع مناسب
+                    while (attempts < 50 && !validPosition) {
+                        attempts++;
+                        
+                        // مواضع عشوائية (بتجنب الحواف - نترك هامش 2 سم تقريباً)
+                        const margin = 75; // 2 سم تقريباً
+                        left = margin + Math.random() * (pageWidth - watermarkSize - 2 * margin);
+                        top = margin + Math.random() * (pageHeight - watermarkSize - 2 * margin);
+                        
+                        // التحقق من المسافة من العلامات المائية الأخرى
+                        validPosition = true;
+                        for (const placed of placedWatermarks) {
+                            const distance = Math.sqrt(
+                                Math.pow(left - placed.left, 2) + 
+                                Math.pow(top - placed.top, 2)
+                            );
+                            
+                            if (distance < minDistance) {
+                                validPosition = false;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // إذا لم نجد موقعاً مناسباً بعد 50 محاولة، نستخدم موقع عشوائي
+                    if (!validPosition) {
+                        left = 75 + Math.random() * (pageWidth - watermarkSize - 150);
+                        top = 75 + Math.random() * (pageHeight - watermarkSize - 150);
+                    }
+                    
+                    // تسجيل الموقع
+                    placedWatermarks.push({ left, top });
+                    
+                    // إنشاء عنصر العلامة المائية
+                    const watermark = document.createElement('div');
+                    watermark.className = 'watermark';
+                    watermark.style.left = left + 'px';
+                    watermark.style.top = top + 'px';
+                    watermark.style.width = watermarkSize + 'px';
+                    watermark.style.height = watermarkSize + 'px';
+                    watermark.style.opacity = '0.03'; // شفافية عالية جداً
+                    
+                    // إنشاء عنصر الصورة
+                    const img = document.createElement('img');
+                    img.src = 'https://i.postimg.cc/3xZmVcrP/YASR.jpg';
+                    img.alt = 'شعار YASR';
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'contain';
+                    img.style.borderRadius = '50%'; // جعل الشعار دائري في العلامة المائية
+                    
+                    watermark.appendChild(img);
+                    container.appendChild(watermark);
+                }
+            }
+            
             // دالة التصدير إلى PDF للموظف
             async function exportPDF() {
                 const employeeId = document.getElementById('employeeSelect').value;
@@ -2789,6 +3105,9 @@
                     alert('لم يتم العثور على بيانات الموظف');
                     return;
                 }
+                
+                // إنشاء علامات مائية
+                createWatermarks('watermarks-container', 8);
                 
                 // تحديث قالب PDF
                 document.getElementById('pdf-employee-name').textContent = employee.name;
@@ -2822,9 +3141,10 @@
                 
                 rows.forEach(row => {
                     const tr = document.createElement('tr');
+                    const isTotal = row[0] === 'إجمالي المستحقات';
                     tr.innerHTML = `
                         <td style="padding: 5px; border: 1px solid #ddd; text-align: right;">${row[0]}</td>
-                        <td style="padding: 5px; border: 1px solid #ddd; text-align: center;">${row[1]}</td>
+                        <td style="padding: 5px; border: 1px solid #ddd; text-align: center; ${isTotal ? 'font-size: 14px; font-weight: bold; color: #D8334A;' : ''}">${row[1]}</td>
                         <td style="padding: 5px; border: 1px solid #ddd; text-align: right; font-size: 9px;">${row[2]}</td>
                     `;
                     tableBody.appendChild(tr);
@@ -2847,6 +3167,9 @@
                     alert('لم يتم العثور على بيانات الموظف');
                     return;
                 }
+                
+                // إنشاء علامات مائية
+                createWatermarks('watermarks-vacation-container', 8);
                 
                 // تحديث قالب PDF للإجازة
                 document.getElementById('pdf-vacation-employee-name').textContent = employee.name;
@@ -2873,9 +3196,10 @@
                 
                 rows.forEach(row => {
                     const tr = document.createElement('tr');
+                    const isTotal = row[0] === 'إجمالي مستحقات الإجازة';
                     tr.innerHTML = `
                         <td style="padding: 5px; border: 1px solid #ddd; text-align: right;">${row[0]}</td>
-                        <td style="padding: 5px; border: 1px solid #ddd; text-align: center;">${row[1]}</td>
+                        <td style="padding: 5px; border: 1px solid #ddd; text-align: center; ${isTotal ? 'font-size: 14px; font-weight: bold; color: #D8334A;' : ''}">${row[1]}</td>
                         <td style="padding: 5px; border: 1px solid #ddd; text-align: right; font-size: 9px;">${row[2]}</td>
                     `;
                     tableBody.appendChild(tr);
@@ -2916,6 +3240,9 @@
                     return;
                 }
                 
+                // إنشاء علامات مائية
+                createWatermarks('watermarks-history-container', 8);
+                
                 // تحديث قالب PDF لتقرير حركة الإجازات
                 document.getElementById('pdf-report-employee').textContent = employeeName;
                 document.getElementById('pdf-report-period').textContent = 
@@ -2939,12 +3266,12 @@
                         <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${formatDate(record.date)}</td>
                         <td style="padding: 4px; border: 1px solid #ddd; text-align: right;">${record.employeeName}</td>
                         <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${record.type}</td>
-                        <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${record.usedDays || 0}</td>
-                        <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${record.cutDaysAdded || 0}</td>
-                        <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${record.balanceBefore || 0}</td>
-                        <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${record.balanceAfter || 0}</td>
-                        <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${record.cutBalanceBefore || 0}</td>
-                        <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${record.cutBalanceAfter || 0}</td>
+                        <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${(record.usedDays || 0).toFixed(3)}</td>
+                        <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${(record.cutDaysAdded || 0).toFixed(3)}</td>
+                        <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${(record.balanceBefore || 0).toFixed(3)}</td>
+                        <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${(record.balanceAfter || 0).toFixed(3)}</td>
+                        <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${(record.cutBalanceBefore || 0).toFixed(3)}</td>
+                        <td style="padding: 4px; border: 1px solid #ddd; text-align: center;">${(record.cutBalanceAfter || 0).toFixed(3)}</td>
                         <td style="padding: 4px; border: 1px solid #ddd; text-align: right; font-size: 8px;">${record.notes || ''}</td>
                     `;
                     tableBody.appendChild(tr);
