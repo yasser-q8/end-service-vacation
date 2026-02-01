@@ -7,11 +7,14 @@
     <!-- إضافة أيقونة الشعار -->
     <link rel="icon" href="https://i.postimg.cc/3xZmVcrP/YASR.jpg" type="image/jpeg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
     <style>
         :root {
-            --primary-red: #D8334A;
+            --primary-red: #3B9C9C;
             --primary-blue: #4AB9DC;
             --dark-blue: #2A7A9A;
             --light-blue: #E8F4F8;
@@ -43,7 +46,7 @@
         }
 
         .container {
-            max-width: 1750px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -193,20 +196,28 @@
             grid-template-columns: repeat(6, 1fr);
         }
 
-        .employee-row {
-            grid-template-columns: 92px 0.8fr 160px 100px 80px 100px 80px 100px 100px 100px 120px 110px;
-            align-items: center;
-            gap: 10px;
+        /* تنسيق جديد لجداول إضافة الموظفين - محسّن */
+        .employee-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
-        .compact-row .input-group input,
-        .compact-row .input-group select {
-            padding: 10px 12px;
-            font-size: 1.0rem;
+        .employee-form-large {
+            grid-template-columns: repeat(5, 1fr);
         }
 
         .employee-select-large {
             grid-column: span 2;
+        }
+
+        .employee-name-large {
+            grid-column: span 2;
+        }
+
+        .employee-balance-small {
+            grid-template-columns: repeat(6, 1fr);
         }
 
         .input-group {
@@ -260,11 +271,78 @@
             box-shadow: var(--shadow);
         }
 
+        /* تحديث عرض الأعمدة حسب النسب المطلوبة */
         .employee-table th, .employee-table td {
             border: 1px solid #ddd;
             padding: 10px;
             text-align: right;
             font-size: 0.9rem;
+        }
+
+        .employee-table th:nth-child(1), /* الرقم الوظيفي */
+        .employee-table td:nth-child(1) {
+            width: 6%; /* تصغير 20% من الـ 8% الافتراضي */
+        }
+
+        .employee-table th:nth-child(2), /* اسم الموظف */
+        .employee-table td:nth-child(2) {
+            width: 16%; /* تكبير 100% من الـ 8% الافتراضي */
+            font-weight: 600;
+        }
+
+        .employee-table th:nth-child(3), /* تاريخ التعيين */
+        .employee-table td:nth-child(3) {
+            width: 7.2%; /* تصغير 10% من الـ 8% الافتراضي */
+        }
+
+        .employee-table th:nth-child(4), /* حالة الموظف */
+        .employee-table td:nth-child(4) {
+            width: 8.4%; /* تكبير 5% من الـ 8% الافتراضي */
+        }
+
+        .employee-table th:nth-child(5), /* بداية الارصدة */
+        .employee-table td:nth-child(5) {
+            width: 7.2%; /* تصغير 10% من الـ 8% الافتراضي */
+        }
+
+        .employee-table th:nth-child(6), /* الراتب الأساسي */
+        .employee-table td:nth-child(6) {
+            width: 7.2%; /* تصغير 10% من الـ 8% الافتراضي */
+        }
+
+        .employee-table th:nth-child(7), /* بدل السكن */
+        .employee-table td:nth-child(7) {
+            width: 6.8%; /* تصغير 15% من الـ 8% الافتراضي */
+        }
+
+        .employee-table th:nth-child(8), /* بدل المواصلات */
+        .employee-table td:nth-child(8) {
+            width: 7.2%; /* تصغير 10% من الـ 8% الافتراضي */
+        }
+
+        .employee-table th:nth-child(9), /* بدلات أخرى */
+        .employee-table td:nth-child(9) {
+            width: 6.8%; /* تصغير 15% من الـ 8% الافتراضي */
+        }
+
+        .employee-table th:nth-child(10), /* رصيد الإجازات */
+        .employee-table td:nth-child(10) {
+            width: 7.2%; /* تصغير 10% من الـ 8% الافتراضي */
+        }
+
+        .employee-table th:nth-child(11), /* الأيام المستنفذة */
+        .employee-table td:nth-child(11) {
+            width: 7.2%; /* تصغير 10% من الـ 8% الافتراضي */
+        }
+
+        .employee-table th:nth-child(12), /* الأيام المقطوعة */
+        .employee-table td:nth-child(12) {
+            width: 7.2%; /* تصغير 10% من الـ 8% الافتراضي */
+        }
+
+        .employee-table th:nth-child(13), /* الإجراءات */
+        .employee-table td:nth-child(13) {
+            width: 9.2%; /* تكبير 15% من الـ 8% الافتراضي */
         }
 
         .employee-table th {
@@ -726,6 +804,34 @@
             cursor: pointer;
         }
 
+        /* إعدادات الإضافي - البدلات المخصصة */
+        .overtime-allowance-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 12px;
+            background-color: #f0f9ff;
+            border-radius: 8px;
+            border: 1px solid #e0f2fe;
+        }
+
+        .overtime-allowance-item label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .overtime-allowance-item input[type="checkbox"] {
+            width: 24px !important;
+            height: 24px !important;
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+
         /* جدول حركة الإجازات */
         .vacation-history-table {
             width: 100%;
@@ -841,6 +947,29 @@
             color: #383d41;
         }
 
+        /* تنسيقات flatpickr المخصصة */
+        .flatpickr-input {
+            cursor: pointer;
+            background-color: var(--input-bg) !important;
+        }
+
+        .flatpickr-calendar {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: rtl;
+        }
+
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .flatpickr-weekdays {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .flatpickr-day {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         @media (max-width: 768px) {
             .form-row {
                 grid-template-columns: 1fr;
@@ -850,7 +979,23 @@
                 grid-template-columns: 1fr;
             }
             
-            .employee-row {
+            .employee-form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .employee-name-large {
+                grid-column: span 1;
+            }
+            
+            .employee-select-large {
+                grid-column: span 1;
+            }
+            
+            .employee-form-large {
+                grid-template-columns: 1fr;
+            }
+            
+            .employee-balance-small {
                 grid-template-columns: 1fr;
             }
             
@@ -889,10 +1034,6 @@
                 align-items: center;
             }
             
-            .employee-select-large {
-                grid-column: span 1;
-            }
-            
             .signature-card { 
                 position: relative; 
                 bottom: auto; 
@@ -914,8 +1055,42 @@
                 transform: scale(1.2);
             }
             
+            .overtime-allowance-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .overtime-allowance-item input[type="checkbox"] {
+                transform: scale(1.2);
+            }
+            
             .report-controls {
                 flex-direction: column;
+            }
+            
+            .employee-table th:nth-child(n),
+            .employee-table td:nth-child(n) {
+                width: auto !important;
+                display: block;
+            }
+            
+            .employee-table th,
+            .employee-table td {
+                display: block;
+                width: 100% !important;
+                box-sizing: border-box;
+            }
+            
+            .employee-table tr {
+                display: block;
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            
+            .employee-table thead {
+                display: none;
             }
         }
 
@@ -945,6 +1120,7 @@
             <button class="nav-btn" data-screen="vacation-report">تقرير حركة الإجازات</button>
             <button class="nav-btn" data-screen="settings">الإعدادات</button>
             <button class="nav-btn" data-screen="backup">النسخ الاحتياطي</button>
+            <button class="nav-btn" data-screen="reprint">إعادة إصدار المعاملات</button>
         </div>
 
         <div class="app-description">
@@ -957,18 +1133,20 @@
         <div class="screen active" id="employees-screen">
             <div class="input-section">
                 <h3><i class="fas fa-users"></i> إضافة موظف جديد</h3>
-                <div class="form-row employee-row">
+                
+                <!-- الصف الأول: جميع الحقول الأساسية الخمسة في صف واحد -->
+                <div class="employee-form-grid employee-form-large">
                     <div class="input-group">
                         <label for="employeeId">الرقم الوظيفي</label>
-                        <input type="text" id="employeeId" placeholder="رقم">
+                        <input type="text" id="employeeId" placeholder="رقم الموظف">
                     </div>
                     <div class="input-group">
                         <label for="employeeName">اسم الموظف</label>
-                        <input type="text" id="employeeName" placeholder="اسم الموظف">
+                        <input type="text" id="employeeName" placeholder="الاسم الكامل للموظف">
                     </div>
                     <div class="input-group">
                         <label for="employeeHireDate">تاريخ التعيين</label>
-                        <input type="date" id="employeeHireDate">
+                        <input type="text" id="employeeHireDate" class="flatpickr-input date-input" placeholder="يوم/شهر/سنة" data-date-format="d/m/Y" readonly>
                     </div>
                     <div class="input-group">
                         <label for="employeeStatus">حالة الموظف</label>
@@ -980,37 +1158,50 @@
                         </select>
                     </div>
                     <div class="input-group">
-                        <label for="employeeBasicSalary">الراتب الأساسي</label>
-                        <input type="number" id="employeeBasicSalary" placeholder="الراتب">
+                        <label for="balanceStartDate">بداية تاريخ الارصدة</label>
+                        <input type="text" id="balanceStartDate" class="flatpickr-input date-input" placeholder="يوم/شهر/سنة" data-date-format="d/m/Y" readonly>
+                        <small style="color: #666; font-size: 0.8rem; display: block; margin-top: 5px;">تاريخ بداية حساب الإجازات المتراكمة (مثال: 31-12-2025)</small>
+                    </div>
+                </div>
+
+                <!-- الصف الثاني: الرواتب والبدلات -->
+                <div class="employee-form-grid">
+                    <div class="input-group">
+                        <label for="employeeBasicSalary">الراتب الأساسي (د.ك)</label>
+                        <input type="number" id="employeeBasicSalary" placeholder="0.000">
                     </div>
                     <div class="input-group">
-                        <label for="employeeHousing">بدل السكن</label>
-                        <input type="number" id="employeeHousing" placeholder="السكن">
+                        <label for="employeeHousing">بدل السكن (د.ك)</label>
+                        <input type="number" id="employeeHousing" placeholder="0.000">
                     </div>
                     <div class="input-group">
-                        <label for="employeeTransport">بدل المواصلات</label>
-                        <input type="number" id="employeeTransport" placeholder="المواصلات">
+                        <label for="employeeTransport">بدل المواصلات (د.ك)</label>
+                        <input type="number" id="employeeTransport" placeholder="0.000">
                     </div>
                     <div class="input-group">
-                        <label for="employeeOther">بدلات أخرى</label>
-                        <input type="number" id="employeeOther" placeholder="أخرى">
+                        <label for="employeeOther">بدلات أخرى (د.ك)</label>
+                        <input type="number" id="employeeOther" placeholder="0.000">
                     </div>
+                </div>
+
+                <!-- الصف الثالث: رصيد الإجازات والأيام -->
+                <div class="employee-form-grid employee-balance-small">
                     <div class="input-group">
                         <label for="employeeVacationDays">رصيد أيام الإجازات</label>
-                        <input type="number" id="employeeVacationDays" placeholder="الإجازة" value="30" step="0.001">
+                        <input type="number" id="employeeVacationDays" placeholder="30" step="0.001" value="30">
                     </div>
                     <div class="input-group">
                         <label for="employeeUsedDays">الأيام المستنفذة</label>
-                        <input type="number" id="employeeUsedDays" placeholder="المستنفذة" value="0" step="0.001">
+                        <input type="number" id="employeeUsedDays" placeholder="0" step="0.001" value="0">
                     </div>
                     <div class="input-group">
                         <label for="employeeCutDays">الأيام المقطوعة</label>
-                        <input type="number" id="employeeCutDays" placeholder="المقطوعة" value="0" step="0.001">
+                        <input type="number" id="employeeCutDays" placeholder="0" step="0.001" value="0">
                     </div>
-                    <div class="input-group">
+                    <div class="input-group" style="grid-column: span 3;">
                         <label>&nbsp;</label>
-                        <button class="btn btn-success" id="addEmployee">
-                            <i class="fas fa-plus"></i> إضافة
+                        <button class="btn btn-success" id="addEmployee" style="width: 100%;">
+                            <i class="fas fa-plus"></i> إضافة موظف جديد
                         </button>
                     </div>
                 </div>
@@ -1024,7 +1215,8 @@
                             <th style="width: 90px;">الرقم الوظيفي</th>
                             <th>اسم الموظف</th>
                             <th style="width: 120px;">تاريخ التعيين</th>
-                            <th style="width: 100px;">الحالة</th>
+                            <th style="width: 120px;">حالة الموظف</th>
+                            <th style="width: 120px;">بداية الارصدة</th>
                             <th style="width: 110px;">الراتب الأساسي</th>
                             <th style="width: 90px;">بدل السكن</th>
                             <th style="width: 100px;">بدل المواصلات</th>
@@ -1070,7 +1262,7 @@
                     </div>
                     <div class="input-group">
                         <label for="endDate">تاريخ انهاء الخدمة</label>
-                        <input type="date" id="endDate">
+                        <input type="text" id="endDate" class="flatpickr-input date-input" placeholder="يوم/شهر/سنة" data-date-format="d/m/Y" readonly>
                     </div>
                     <div class="input-group">
                         <label for="terminationType">نوع إنهاء الخدمة</label>
@@ -1098,6 +1290,9 @@
                         <label for="holidayOvertime">ساعات إضافي العطل</label>
                         <input type="number" id="holidayOvertime" placeholder="عدد الساعات">
                     </div>
+                </div>
+                <div class="calculation-steps" style="margin-top: 10px;">
+                    <p><strong>ملاحظة:</strong> يتم حساب الإضافي حسب الإعدادات المختارة في صفحة الإعدادات (الراتب الأساسي فقط، الراتب الأساسي مع البدلات، أو جزء من البدلات). يمكنك تغيير طريقة الحساب من صفحة الإعدادات.</p>
                 </div>
             </div>
 
@@ -1231,17 +1426,19 @@
                     </div>
                     <div class="input-group">
                         <label for="vacationStartDate">تاريخ بداية الإجازة</label>
-                        <input type="date" id="vacationStartDate">
+                        <input type="text" id="vacationStartDate" class="flatpickr-input date-input" placeholder="يوم/شهر/سنة" data-date-format="d/m/Y" readonly>
                     </div>
                     <div class="input-group">
                         <label for="vacationEndDate">تاريخ نهاية الإجازة</label>
-                        <input type="date" id="vacationEndDate">
+                        <input type="text" id="vacationEndDate" class="flatpickr-input date-input" placeholder="يوم/شهر/سنة" data-date-format="d/m/Y" readonly>
                     </div>
                 </div>
                 <div class="calculation-steps">
                     <p><strong>ملاحظة:</strong> سيتم حساب أيام الإجازة تلقائياً بناءً على رصيد الإجازات للموظف وتواريخ بداية ونهاية الإجازة.</p>
                     <p><strong>معلومات:</strong> في حساب الإجازات يتم صرف رصيد الإجازة المستحق فقط، والأيام المقطوعة ستتم محاسبتها عند نهاية الخدمة.</p>
                     <p><strong>ملاحظة هامة:</strong> يتم حساب كسور الشهر في الإجازات (2.5 يوم لكل شهر كامل، وأقل من الشهر يتم حسابه بنسبة 2.5 يوم ÷ 30 يوم × عدد الأيام الفعلية).</p>
+                    <p><strong>التحسين الجديد:</strong> سيتم حساب الإجازات المتراكمة من تاريخ "بداية الارصدة" للموظف بدلاً من تاريخ التعيين.</p>
+                    <p><strong>ملاحظة حول الإضافي:</strong> يمكن تغيير طريقة حساب الإضافي (الراتب الأساسي فقط، الراتب الأساسي مع البدلات، أو جزء من البدلات) من صفحة الإعدادات.</p>
                 </div>
             </div>
 
@@ -1339,11 +1536,11 @@
                     </div>
                     <div class="input-group">
                         <label for="reportStartDate">من تاريخ</label>
-                        <input type="date" id="reportStartDate">
+                        <input type="text" id="reportStartDate" class="flatpickr-input date-input" placeholder="يوم/شهر/سنة" data-date-format="d/m/Y" readonly>
                     </div>
                     <div class="input-group">
                         <label for="reportEndDate">إلى تاريخ</label>
-                        <input type="date" id="reportEndDate">
+                        <input type="text" id="reportEndDate" class="flatpickr-input date-input" placeholder="يوم/شهر/سنة" data-date-format="d/m/Y" readonly>
                     </div>
                     <div class="input-group">
                         <label>&nbsp;</label>
@@ -1416,6 +1613,51 @@
                     </div>
                 </div>
                 
+                <div class="calculation-steps" style="margin-bottom: 20px;">
+                    <h4>طريقة حساب الإضافي:</h4>
+                    <div class="allowance-item">
+                        <label>
+                            <input type="radio" name="overtimeCalculation" id="overtimeBasicOnly" value="basicOnly" checked>
+                            <span class="checkbox-text">الراتب الأساسي فقط</span>
+                        </label>
+                    </div>
+                    <div class="allowance-item">
+                        <label>
+                            <input type="radio" name="overtimeCalculation" id="overtimeWithAll" value="withAll">
+                            <span class="checkbox-text">الراتب الأساسي مع جميع البدلات</span>
+                        </label>
+                    </div>
+                    <div class="allowance-item">
+                        <label>
+                            <input type="radio" name="overtimeCalculation" id="overtimeWithSome" value="withSome">
+                            <span class="checkbox-text">الراتب الأساسي مع جزء من البدلات (حسب اختيار البدلات أعلاه)</span>
+                        </label>
+                    </div>
+                    
+                    <!-- بدلات الإضافي المخصصة (تظهر فقط عند اختيار "مع جزء من البدلات") -->
+                    <div id="overtimeCustomAllowances" style="display: none; margin-top: 15px; padding: 15px; background-color: #f0f9ff; border-radius: 8px;">
+                        <h5 style="color: var(--dark-blue); margin-bottom: 10px;">اختر البدلات التي تريد إضافتها لحساب الإضافي:</h5>
+                        <div class="overtime-allowance-item">
+                            <label>
+                                <input type="checkbox" id="overtimeIncludeHousing" checked>
+                                <span class="checkbox-text">بدل السكن</span>
+                            </label>
+                        </div>
+                        <div class="overtime-allowance-item">
+                            <label>
+                                <input type="checkbox" id="overtimeIncludeTransport" checked>
+                                <span class="checkbox-text">بدل المواصلات</span>
+                            </label>
+                        </div>
+                        <div class="overtime-allowance-item">
+                            <label>
+                                <input type="checkbox" id="overtimeIncludeOther" checked>
+                                <span class="checkbox-text">بدلات أخرى</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="form-row">
                     <div class="input-group">
                         <label for="workingDaysPerMonth">عدد أيام العمل الشهرية</label>
@@ -1441,6 +1683,7 @@
                 <h3><i class="fas fa-info-circle"></i> معلومات عن الإعدادات</h3>
                 <ul>
                     <li>البدلات المضافة: تحدد أي البدلات تضاف لحساب إجمالي الراتب عند حساب المستحقات.</li>
+                    <li>طريقة حساب الإضافي: تحدد ما إذا كان الإضافي يحسب على الراتب الأساسي فقط، أو مع جميع البدلات، أو مع جزء من البدلات حسب اختيارك.</li>
                     <li>عدد أيام العمل الشهرية: تستخدم لحساب الراتب اليومي (الراتب ÷ عدد الأيام).</li>
                     <li>عدد ساعات العمل اليومية: تستخدم لحساب قيمة ساعة العمل لحساب الإضافي.</li>
                     <li>الإعدادات يتم حفظها تلقائياً في المتصفح.</li>
@@ -1497,6 +1740,77 @@
                         <li>حذف النسخ الاحتياطية: يزيل النسخ الاحتياطية المحفوظة في المتصفح.</li>
                     </ul>
                 </div>
+            </div>
+        </div>
+
+        <!-- شاشة إعادة إصدار المعاملات -->
+        <div class="screen" id="reprint-screen">
+            <div class="input-section">
+                <h3><i class="fas fa-redo"></i> إعادة إصدار المعاملات المنجزة</h3>
+                
+                <div class="report-controls">
+                    <div class="input-group">
+                        <label for="reprintEmployeeSelect">اختر الموظف</label>
+                        <select id="reprintEmployeeSelect">
+                            <option value="">اختر الموظف</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="reprintType">نوع المعاملة</label>
+                        <select id="reprintType">
+                            <option value="">جميع المعاملات</option>
+                            <option value="نهاية خدمة">نهاية خدمة</option>
+                            <option value="صرف إجازة">صرف إجازة</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="reprintStartDate">من تاريخ</label>
+                        <input type="text" id="reprintStartDate" class="flatpickr-input date-input" placeholder="يوم/شهر/سنة" data-date-format="d/m/Y" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label for="reprintEndDate">إلى تاريخ</label>
+                        <input type="text" id="reprintEndDate" class="flatpickr-input date-input" placeholder="يوم/شهر/سنة" data-date-format="d/m/Y" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label>&nbsp;</label>
+                        <button class="btn btn-info" id="searchReprint">
+                            <i class="fas fa-search"></i> بحث
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="action-buttons" id="reprintActions" style="display: none;">
+                    <button class="btn btn-success" id="reprintPDF">
+                        <i class="fas fa-print"></i> إعادة إصدار PDF
+                    </button>
+                </div>
+            </div>
+
+            <div class="results" id="reprintResults">
+                <h3><i class="fas fa-file-invoice"></i> نتائج البحث</h3>
+                
+                <div class="calculation-steps">
+                    <p id="reprintSummary"></p>
+                </div>
+                
+                <table class="vacation-history-table" id="reprintTable">
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>اسم الموظف</th>
+                            <th>نوع الحركة</th>
+                            <th>الأيام المستخدمة</th>
+                            <th>الأيام المقطوعة المضافة</th>
+                            <th>رصيد الإجازات قبل</th>
+                            <th>رصيد الإجازات بعد</th>
+                            <th>ملاحظات</th>
+                            <th>إعادة إصدار</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reprintTableBody">
+                        <!-- سيتم ملء هذا القسم بالبيانات عبر JavaScript -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -1677,7 +1991,11 @@
                 includeTransport: true,
                 includeOther: true,
                 workingDaysPerMonth: 26,
-                dailyWorkHours: 8
+                dailyWorkHours: 8,
+                overtimeCalculation: 'basicOnly', // الإضافة الجديدة: طريقة حساب الإضافي
+                overtimeIncludeHousing: true,     // إضافة للإعدادات الجديدة
+                overtimeIncludeTransport: true,   // إضافة للإعدادات الجديدة
+                overtimeIncludeOther: true        // إضافة للإعدادات الجديدة
             };
             
             // إعدادات النسخ الاحتياطي
@@ -1693,6 +2011,9 @@
             
             // متغيرات مؤقتة لحساب نهاية الخدمة
             let currentEndServiceCalculation = null;
+            
+            // متغيرات لإعادة إصدار المعاملات
+            let selectedReprintRecord = null;
             
             // عناصر التحكم
             const navButtons = document.querySelectorAll('.nav-btn');
@@ -1726,6 +2047,13 @@
             const includeHousing = document.getElementById('includeHousing');
             const includeTransport = document.getElementById('includeTransport');
             const includeOther = document.getElementById('includeOther');
+            const overtimeBasicOnly = document.getElementById('overtimeBasicOnly');
+            const overtimeWithAll = document.getElementById('overtimeWithAll');
+            const overtimeWithSome = document.getElementById('overtimeWithSome');
+            const overtimeCustomAllowances = document.getElementById('overtimeCustomAllowances');
+            const overtimeIncludeHousing = document.getElementById('overtimeIncludeHousing');
+            const overtimeIncludeTransport = document.getElementById('overtimeIncludeTransport');
+            const overtimeIncludeOther = document.getElementById('overtimeIncludeOther');
             const workingDaysPerMonth = document.getElementById('workingDaysPerMonth');
             const dailyWorkHours = document.getElementById('dailyWorkHours');
             const saveSettingsBtn = document.getElementById('saveSettings');
@@ -1742,20 +2070,69 @@
             const backupPathDisplay = document.getElementById('backupPathDisplay');
             const changeBackupPathBtn = document.getElementById('changeBackupPath');
             
-            // تعيين التواريخ الافتراضية للسنة 2026
-            const today = new Date(2026, 0, 27); // 27 يناير 2026
-            const todayStr = formatDateForInput(today);
+            // عناصر إعادة إصدار المعاملات
+            const reprintEmployeeSelect = document.getElementById('reprintEmployeeSelect');
+            const reprintType = document.getElementById('reprintType');
+            const reprintStartDate = document.getElementById('reprintStartDate');
+            const reprintEndDate = document.getElementById('reprintEndDate');
+            const searchReprintBtn = document.getElementById('searchReprint');
+            const reprintPDFBtn = document.getElementById('reprintPDF');
+            const reprintResults = document.getElementById('reprintResults');
+            const reprintTableBody = document.getElementById('reprintTableBody');
+            const reprintSummary = document.getElementById('reprintSummary');
+            const reprintActions = document.getElementById('reprintActions');
             
-            // تعيين التواريخ الافتراضية
-            document.getElementById('endDate').value = todayStr;
-            document.getElementById('vacationStartDate').value = todayStr;
-            document.getElementById('reportStartDate').value = formatDateForInput(new Date(2025, 0, 1));
-            document.getElementById('reportEndDate').value = todayStr;
+            // تهيئة flatpickr لحقول التاريخ
+            function initializeDatePickers() {
+                const dateInputs = document.querySelectorAll('.flatpickr-input');
+                
+                const flatpickrConfig = {
+                    locale: 'ar',
+                    dateFormat: "d/m/Y",
+                    allowInput: false,
+                    clickOpens: true,
+                    monthSelectorType: 'static',
+                    yearSelectorType: 'static',
+                    nextArrow: '<i class="fas fa-chevron-right"></i>',
+                    prevArrow: '<i class="fas fa-chevron-left"></i>',
+                    position: 'auto',
+                    disableMobile: true
+                };
+                
+                dateInputs.forEach(input => {
+                    const fp = flatpickr(input, flatpickrConfig);
+                    
+                    // تعيين القيم الافتراضية بناءً على نوع الحقل
+                    const today = new Date();
+                    if (input.id === 'employeeHireDate') {
+                        fp.setDate('01/01/2025');
+                    } else if (input.id === 'balanceStartDate') {
+                        fp.setDate('01/01/2026');
+                    } else if (input.id === 'endDate') {
+                        fp.setDate(today);
+                    } else if (input.id === 'vacationStartDate') {
+                        fp.setDate(today);
+                    } else if (input.id === 'vacationEndDate') {
+                        const endDate = new Date(today);
+                        endDate.setDate(today.getDate() + 14);
+                        fp.setDate(endDate);
+                    } else if (input.id === 'reportStartDate') {
+                        const startDate = new Date(2025, 0, 1);
+                        fp.setDate(startDate);
+                    } else if (input.id === 'reportEndDate') {
+                        fp.setDate(today);
+                    } else if (input.id === 'reprintStartDate') {
+                        const startDate = new Date();
+                        startDate.setMonth(startDate.getMonth() - 6);
+                        fp.setDate(startDate);
+                    } else if (input.id === 'reprintEndDate') {
+                        fp.setDate(today);
+                    }
+                });
+            }
             
-            const endDate = new Date(today);
-            endDate.setDate(today.getDate() + 14);
-            document.getElementById('vacationEndDate').value = formatDateForInput(endDate);
-            document.getElementById('employeeHireDate').value = '2025-01-01'; // تاريخ افتراضي للتعيين
+            // تهيئة منتقي التاريخ
+            initializeDatePickers();
             
             // تحميل الإعدادات
             loadSettings();
@@ -1763,8 +2140,9 @@
             // تحديث مسارات النسخ الاحتياطية
             updateBackupPaths();
             
-            // تحديث قائمة الموظفين في التقرير
+            // تحديث قائمة الموظفين في التقرير وإعادة الإصدار
             updateReportEmployeeList();
+            updateReprintEmployeeList();
             
             // إضافة معالجات الأحداث
             navButtons.forEach(btn => {
@@ -1791,14 +2169,19 @@
                     if (screenId === 'vacation-report') {
                         updateReportEmployeeList();
                     }
+                    
+                    // تحديث قائمة الموظفين لإعادة الإصدار
+                    if (screenId === 'reprint') {
+                        updateReprintEmployeeList();
+                    }
                 });
             });
             
             addEmployeeBtn.addEventListener('click', addOrUpdateEmployee);
             calculateEndServiceBtn.addEventListener('click', calculateEndService);
-            saveEndServiceBtn.addEventListener('click', saveEndService);
+            saveEndServiceBtn.addEventListener('click', saveEndServiceWithPrompt);
             calculateVacationBtn.addEventListener('click', calculateVacation);
-            saveVacationBtn.addEventListener('click', saveVacation);
+            saveVacationBtn.addEventListener('click', saveVacationWithPrompt);
             exportPDFBtn.addEventListener('click', exportPDF);
             exportVacationPDFBtn.addEventListener('click', exportVacationPDF);
             generateReportBtn.addEventListener('click', generateVacationReport);
@@ -1820,6 +2203,15 @@
             downloadBackupBtn.addEventListener('click', downloadBackup);
             deleteBackupBtn.addEventListener('click', deleteBackup);
             changeBackupPathBtn.addEventListener('click', () => changeBackupPath('backup'));
+            
+            // أحداث إعادة إصدار المعاملات
+            searchReprintBtn.addEventListener('click', searchReprint);
+            reprintPDFBtn.addEventListener('click', reprintSelectedPDF);
+            
+            // أحداث طريقة حساب الإضافي
+            overtimeBasicOnly.addEventListener('change', toggleOvertimeCustomAllowances);
+            overtimeWithAll.addEventListener('change', toggleOvertimeCustomAllowances);
+            overtimeWithSome.addEventListener('change', toggleOvertimeCustomAllowances);
             
             // تحميل بيانات الموظفين عند بدء التشغيل
             loadEmployees();
@@ -1862,38 +2254,72 @@
             // دالة تنسيق التاريخ للعرض (يوم-شهر-سنة)
             function formatDate(date) {
                 if (!date) return '';
-                const d = new Date(date);
+                
+                let d;
+                if (typeof date === 'string') {
+                    // تحويل من تنسيق YYYY-MM-DD إلى DD/MM/YYYY
+                    const parts = date.split('-');
+                    if (parts.length === 3) {
+                        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+                    }
+                    d = new Date(date);
+                } else {
+                    d = date;
+                }
+                
                 const day = String(d.getDate()).padStart(2, '0');
                 const month = String(d.getMonth() + 1).padStart(2, '0');
                 const year = d.getFullYear();
-                return `${day}-${month}-${year}`;
+                return `${day}/${month}/${year}`;
             }
             
-            // دالة تنسيق التاريخ لحقول الإدخال (سنة-شهر-يوم)
-            function formatDateForInput(date) {
-                if (!date) return '';
-                const d = new Date(date);
-                const year = d.getFullYear();
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
+            // دالة تحويل التاريخ من تنسيق DD/MM/YYYY إلى تنسيق YYYY-MM-DD
+            function parseDateDDMMYYYY(dateStr) {
+                if (!dateStr) return null;
+                
+                const parts = dateStr.split('/');
+                if (parts.length !== 3) return null;
+                
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]);
+                const year = parseInt(parts[2]);
+                
+                if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+                
+                return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+            }
+            
+            // دالة تحويل التاريخ من تنسيق YYYY-MM-DD إلى DD/MM/YYYY
+            function formatDateDDMMYYYY(date) {
+                return formatDate(date);
+            }
+            
+            // دالة الحصول على التاريخ من حقل الإدخال
+            function getDateFromInput(inputId) {
+                const input = document.getElementById(inputId);
+                if (!input || !input.value) return null;
+                
+                return parseDateDDMMYYYY(input.value);
             }
             
             // دالة حساب عدد أيام الإجازة المتراكمة حسب قانون العمل الكويتي (مع كسور الشهر)
-            function calculateAccumulatedVacation(hireDate, calculationDate, lastVacationDate = null) {
-                if (!hireDate || !calculationDate) return 0;
+            function calculateAccumulatedVacation(balanceStartDate, calculationDate, lastVacationDate = null) {
+                if (!balanceStartDate || !calculationDate) return 0;
                 
-                const hire = new Date(hireDate);
+                const start = new Date(balanceStartDate);
                 const calc = new Date(calculationDate);
                 
                 // إذا كان هناك تاريخ آخر إجازة، نبدأ الحساب منه
-                let startDate = hire;
+                let startDate = start;
                 if (lastVacationDate) {
                     const lastVacation = new Date(lastVacationDate);
                     // نبدأ من اليوم التالي لآخر إجازة
                     lastVacation.setDate(lastVacation.getDate() + 1);
                     startDate = lastVacation;
                 }
+                
+                // إذا كان تاريخ البدء بعد تاريخ الحساب، فلا توجد إجازات متراكمة
+                if (startDate > calc) return 0;
                 
                 // حساب الفرق بالأيام الكاملة
                 const timeDiff = calc.getTime() - startDate.getTime();
@@ -1947,11 +2373,59 @@
                 return { years, months, days, totalMonths };
             }
             
+            // دالة حساب إجمالي الراتب حسب الإعدادات والإضافة الجديدة لحساب الإضافي
+            function calculateTotalSalary(employee, forOvertime = false) {
+                let total = employee.basicSalary;
+                
+                if (forOvertime) {
+                    // حساب الإضافي حسب الإعدادات المختارة
+                    switch(appSettings.overtimeCalculation) {
+                        case 'basicOnly':
+                            // الراتب الأساسي فقط
+                            return employee.basicSalary;
+                        case 'withAll':
+                            // الراتب الأساسي مع جميع البدلات
+                            total += (employee.housing || 0) + (employee.transport || 0) + (employee.other || 0);
+                            return total;
+                        case 'withSome':
+                            // الراتب الأساسي مع جزء من البدلات حسب اختيار المستخدم
+                            if (appSettings.overtimeIncludeHousing) {
+                                total += employee.housing || 0;
+                            }
+                            if (appSettings.overtimeIncludeTransport) {
+                                total += employee.transport || 0;
+                            }
+                            if (appSettings.overtimeIncludeOther) {
+                                total += employee.other || 0;
+                            }
+                            return total;
+                        default:
+                            return employee.basicSalary;
+                    }
+                } else {
+                    // حساب الراتب العادي (للمستحقات الأخرى)
+                    if (appSettings.includeHousing) {
+                        total += employee.housing || 0;
+                    }
+                    
+                    if (appSettings.includeTransport) {
+                        total += employee.transport || 0;
+                    }
+                    
+                    if (appSettings.includeOther) {
+                        total += employee.other || 0;
+                    }
+                    
+                    return total;
+                }
+            }
+            
             // دالة إضافة أو تعديل موظف
             function addOrUpdateEmployee() {
                 const employeeId = document.getElementById('employeeId').value.trim();
                 const employeeName = document.getElementById('employeeName').value.trim();
-                const employeeHireDate = document.getElementById('employeeHireDate').value;
+                const employeeHireDate = getDateFromInput('employeeHireDate');
+                const balanceStartDate = getDateFromInput('balanceStartDate');
                 const employeeStatus = document.getElementById('employeeStatus').value;
                 const employeeBasicSalary = parseFormattedNumber(document.getElementById('employeeBasicSalary').value) || 0;
                 const employeeHousing = parseFormattedNumber(document.getElementById('employeeHousing').value) || 0;
@@ -1966,6 +2440,9 @@
                     return;
                 }
                 
+                // التحقق من تاريخ بداية الارصدة
+                const finalBalanceStartDate = balanceStartDate || employeeHireDate;
+                
                 if (editingEmployeeIndex === -1) {
                     // إضافة موظف جديد
                     // التحقق من عدم تكرار الرقم الوظيفي
@@ -1978,6 +2455,7 @@
                         id: employeeId,
                         name: employeeName,
                         hireDate: employeeHireDate,
+                        balanceStartDate: finalBalanceStartDate, // تاريخ بداية الارصدة
                         status: employeeStatus,
                         basicSalary: employeeBasicSalary,
                         housing: employeeHousing,
@@ -1997,7 +2475,7 @@
                     
                     // إضافة سجل للرصيد الابتدائي
                     if (employeeVacationDays > 0 || employeeCutDays > 0 || employeeUsedDays > 0) {
-                        addVacationHistoryRecord(employeeId, 'رصيد ابتدائي', employeeUsedDays, 0, employeeVacationDays, employeeCutDays, 'الرصيد الابتدائي للموظف');
+                        addVacationHistoryRecord(employeeId, 'رصيد ابتدائي', employeeUsedDays, 0, employeeVacationDays, employeeCutDays, `الرصيد الابتدائي للموظف - بداية الارصدة: ${formatDate(finalBalanceStartDate)}`);
                     }
                 } else {
                     // تعديل موظف موجود
@@ -2010,6 +2488,7 @@
                         id: employeeId,
                         name: employeeName,
                         hireDate: employeeHireDate,
+                        balanceStartDate: finalBalanceStartDate, // تحديث تاريخ بداية الارصدة
                         status: employeeStatus,
                         basicSalary: employeeBasicSalary,
                         housing: employeeHousing,
@@ -2026,23 +2505,23 @@
                     };
                     
                     // إضافة سجل إذا تغير الرصيد
-                    if (oldVacationDays !== employeeVacationDays || oldCutDays !== employeeCutDays || oldUsedDays !== employeeUsedDays) {
-                        addVacationHistoryRecord(employeeId, 'تعديل رصيد', employeeUsedDays, 0, employeeVacationDays, employeeCutDays, 'تعديل رصيد الإجازات والأيام المقطوعة والمستنفذة');
+                    if (oldVacationDays !== employeeVacationDays || oldCutDays !== employeeCutDays || oldUsedDays !== employeeUsedDays || oldEmployee.balanceStartDate !== finalBalanceStartDate) {
+                        addVacationHistoryRecord(employeeId, 'تعديل رصيد', employeeUsedDays, 0, employeeVacationDays, employeeCutDays, `تعديل رصيد الإجازات والأيام المقطوعة والمستنفذة - بداية الارصدة الجديدة: ${formatDate(finalBalanceStartDate)}`);
                     }
                     
                     // إعادة تعيين حالة التعديل
                     editingEmployeeIndex = -1;
-                    addEmployeeBtn.innerHTML = '<i class="fas fa-plus"></i> إضافة';
+                    addEmployeeBtn.innerHTML = '<i class="fas fa-plus"></i> إضافة موظف جديد';
                 }
                 
                 saveEmployees();
                 loadEmployees();
                 updateReportEmployeeList();
+                updateReprintEmployeeList();
                 
                 // إعادة تعيين الحقول
                 document.getElementById('employeeId').value = '';
                 document.getElementById('employeeName').value = '';
-                document.getElementById('employeeHireDate').value = '';
                 document.getElementById('employeeStatus').value = 'active';
                 document.getElementById('employeeBasicSalary').value = '';
                 document.getElementById('employeeHousing').value = '';
@@ -2060,7 +2539,7 @@
                 employeesList.innerHTML = '';
                 
                 if (employees.length === 0) {
-                    employeesList.innerHTML = '<tr><td colspan="12" style="text-align: center;">لا توجد بيانات موظفين</td></tr>';
+                    employeesList.innerHTML = '<tr><td colspan="13" style="text-align: center;">لا توجد بيانات موظفين</td></tr>';
                     return;
                 }
                 
@@ -2093,6 +2572,7 @@
                         <td>${employee.name}</td>
                         <td>${formatDate(employee.hireDate)}</td>
                         <td><span class="employee-status ${statusClass}">${statusText}</span></td>
+                        <td>${employee.balanceStartDate ? formatDate(employee.balanceStartDate) : formatDate(employee.hireDate)}</td>
                         <td>${employee.basicSalary > 0 ? formatNumber(employee.basicSalary) + ' د.ك' : ''}</td>
                         <td>${employee.housing > 0 ? formatNumber(employee.housing) + ' د.ك' : ''}</td>
                         <td>${employee.transport > 0 ? formatNumber(employee.transport) + ' د.ك' : ''}</td>
@@ -2119,7 +2599,31 @@
                 
                 document.getElementById('employeeId').value = employee.id;
                 document.getElementById('employeeName').value = employee.name;
-                document.getElementById('employeeHireDate').value = employee.hireDate;
+                
+                // تحديث منتقي التاريخ لـ employeeHireDate
+                const hireDateInput = document.getElementById('employeeHireDate');
+                hireDateInput.value = formatDate(employee.hireDate);
+                const hireDateFP = hireDateInput._flatpickr;
+                if (hireDateFP) {
+                    hireDateFP.setDate(employee.hireDate);
+                }
+                
+                // تحديث منتقي التاريخ لـ balanceStartDate
+                const balanceDateInput = document.getElementById('balanceStartDate');
+                if (employee.balanceStartDate) {
+                    balanceDateInput.value = formatDate(employee.balanceStartDate);
+                    const balanceDateFP = balanceDateInput._flatpickr;
+                    if (balanceDateFP) {
+                        balanceDateFP.setDate(employee.balanceStartDate);
+                    }
+                } else {
+                    balanceDateInput.value = '';
+                    const balanceDateFP = balanceDateInput._flatpickr;
+                    if (balanceDateFP) {
+                        balanceDateFP.clear();
+                    }
+                }
+                
                 document.getElementById('employeeStatus').value = employee.status || 'active';
                 document.getElementById('employeeBasicSalary').value = employee.basicSalary > 0 ? formatNumber(employee.basicSalary) : '';
                 document.getElementById('employeeHousing').value = employee.housing > 0 ? formatNumber(employee.housing) : '';
@@ -2130,7 +2634,7 @@
                 document.getElementById('employeeCutDays').value = employee.cutDays || '';
                 
                 editingEmployeeIndex = index;
-                addEmployeeBtn.innerHTML = '<i class="fas fa-save"></i> حفظ التعديل';
+                addEmployeeBtn.innerHTML = '<i class="fas fa-save"></i> حفظ التعديلات';
                 
                 // الانتقال إلى شاشة الموظفين
                 switchScreen('employees');
@@ -2146,6 +2650,7 @@
                     loadEmployees();
                     updateBackupInfo();
                     updateReportEmployeeList();
+                    updateReprintEmployeeList();
                 }
             };
             
@@ -2219,30 +2724,11 @@
                     
                     // عرض رصيد الإجازات في حقل البحث
                     const searchInput = document.getElementById('vacationEmployeeSearch');
-                    searchInput.value = `${employee.id} - ${employee.name} (رصيد الإجازات: ${employee.vacationDays.toFixed(3)} يوم، الأيام المستنفذة: ${employee.usedDays.toFixed(3)} يوم، الأيام المقطوعة: ${employee.cutDays.toFixed(3)} يوم)`;
+                    searchInput.value = `${employee.id} - ${employee.name} (رصيد الإجازات: ${employee.vacationDays.toFixed(3)} يوم، الأيام المستنفذة: ${employee.usedDays.toFixed(3)} يوم، الأيام المقطوعة: ${employee.cutDays.toFixed(3)} يوم، بداية الارصدة: ${formatDate(employee.balanceStartDate || employee.hireDate)})`;
                 }
             }
             
-            // دالة حساب إجمالي الراتب حسب الإعدادات
-            function calculateTotalSalary(employee) {
-                let total = employee.basicSalary;
-                
-                if (appSettings.includeHousing) {
-                    total += employee.housing || 0;
-                }
-                
-                if (appSettings.includeTransport) {
-                    total += employee.transport || 0;
-                }
-                
-                if (appSettings.includeOther) {
-                    total += employee.other || 0;
-                }
-                
-                return total;
-            }
-            
-            // دالة إضافة سجل لحركة الإجازات
+            // دالة إضافة سجل لحركة الإجازات (محدثة)
             function addVacationHistoryRecord(employeeId, type, usedDays, cutDaysAdded, balanceAfter, cutBalanceAfter, notes) {
                 const employee = employees.find(emp => emp.id === employeeId);
                 if (!employee) return;
@@ -2261,6 +2747,32 @@
                     cutBalanceAfter: cutBalanceAfter,
                     notes: notes
                 };
+                
+                // حفظ بيانات إضافية للإجازات (دائماً)
+                if (type === 'صرف إجازة' && currentVacationCalculation) {
+                    record.vacationData = {
+                        ...currentVacationCalculation,
+                        // تخزين بيانات إضافية مهمة
+                        employeeBasicSalary: employee.basicSalary,
+                        employeeHousing: employee.housing,
+                        employeeTransport: employee.transport,
+                        employeeOther: employee.other,
+                        totalSalary: calculateTotalSalary(employee),
+                        dayValue: calculateTotalSalary(employee) / appSettings.workingDaysPerMonth
+                    };
+                }
+                
+                // حفظ بيانات إضافية لنهاية الخدمة (دائماً)
+                if (type === 'نهاية خدمة' && currentEndServiceCalculation) {
+                    record.endServiceData = {
+                        ...currentEndServiceCalculation,
+                        // تخزين بيانات إضافية مهمة
+                        employeeBasicSalary: employee.basicSalary,
+                        employeeHousing: employee.housing,
+                        employeeTransport: employee.transport,
+                        employeeOther: employee.other
+                    };
+                }
                 
                 // تحديث رصيد الموظف
                 employee.vacationDays = balanceAfter;
@@ -2287,185 +2799,53 @@
                 return record;
             }
             
-            // دالة حساب جميع مستحقات نهاية الخدمة
-            function calculateEndService() {
-                const employeeId = document.getElementById('employeeSelect').value;
-                const endDate = document.getElementById('endDate').value;
-                const terminationType = document.getElementById('terminationType').value;
-                const normalOvertime = parseInt(document.getElementById('normalOvertime').value) || 0;
-                const fridayOvertime = parseInt(document.getElementById('fridayOvertime').value) || 0;
-                const holidayOvertime = parseInt(document.getElementById('holidayOvertime').value) || 0;
-                
-                if (!employeeId || !endDate) {
-                    alert('يرجى اختيار موظف وتحديد تاريخ إنهاء الخدمة');
+            // دالة حفظ نهاية الخدمة مع السؤال عن الطباعة
+            function saveEndServiceWithPrompt() {
+                if (!currentEndServiceCalculation) {
+                    alert('لا توجد بيانات نهاية خدمة لحفظها. يرجى حساب نهاية الخدمة أولاً.');
                     return;
                 }
                 
-                const employee = employees.find(emp => emp.id === employeeId);
-                if (!employee) {
-                    alert('لم يتم العثور على بيانات الموظف');
-                    return;
+                const confirmSave = confirm('هل تريد حفظ نهاية الخدمة بدون طباعة؟\n\nنعم: الحفظ فقط\nلا: الرجوع لشاشة نهاية الخدمة للتصدير إلى PDF');
+                
+                if (confirmSave) {
+                    // حفظ بدون طباعة
+                    saveEndService();
+                } else {
+                    // الرجوع لشاشة نهاية الخدمة
+                    switchScreen('end-service');
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    document.querySelector('[data-screen="end-service"]').classList.add('active');
+                    
+                    // عرض رسالة للمستخدم
+                    alert('تم الرجوع لشاشة نهاية الخدمة. يمكنك الآن تصدير النتائج إلى PDF باستخدام زر "تصدير إلى PDF".');
                 }
-                
-                // التحقق مما إذا كان الموظف قد تم حساب نهاية خدمته مسبقاً
-                if (employee.endServiceCalculated) {
-                    alert('هذا الموظف تم حساب نهاية خدمته مسبقاً ولا يمكن إعادة الحساب.');
-                    return;
-                }
-                
-                const basicSalary = employee.basicSalary;
-                const housing = employee.housing || 0;
-                const transport = employee.transport || 0;
-                const other = employee.other || 0;
-                const vacationDays = employee.vacationDays || 0;
-                const cutDays = employee.cutDays || 0;
-                const startDate = employee.hireDate;
-                const deductions = 0;
-                
-                const totalSalary = calculateTotalSalary(employee);
-                
-                // حساب مدة الخدمة الصافية بعد خصم الأيام المقطوعة
-                const servicePeriod = calculateNetServicePeriod(startDate, endDate, cutDays);
-                
-                let firstPeriod = 0;
-                let laterPeriod = 0;
-                let monthsAmount = 0;
-                let daysAmount = 0;
-                let entitlementRatio = 1;
-                let calcDetails = "";
-                
-                // حساب المستحقات حسب نوع إنهاء الخدمة
-                if (terminationType === 'resignation') {
-                    // استقالة - المادة 51 من قانون العمل الكويتي
-                    if (servicePeriod.years < 3) {
-                        entitlementRatio = 0;
-                        calcDetails += "• الاستقالة قبل 3 سنوات: لا مستحقات نهاية خدمة.<br>";
-                    } else if (servicePeriod.years < 5) {
-                        entitlementRatio = 1/3;
-                        calcDetails += "• الاستقالة بين 3-5 سنوات: ثلث مستحقات نهاية الخدمة.<br>";
-                    } else if (servicePeriod.years < 10) {
-                        entitlementRatio = 2/3;
-                        calcDetails += "• الاستقالة بين 5-10 سنوات: ثلثي مستحقات نهاية الخدمة.<br>";
-                    } else {
-                        entitlementRatio = 1;
-                        calcDetails += "• الاستقالة بعد 10 سنوات: كامل مستحقات نهاية الخدمة.<br>";
-                    }
-                } else if (terminationType === 'employer') {
-                    entitlementRatio = 1;
-                    calcDetails += "• إنهاء الخدمة من صاحب العمل: 100% من المستحقات.<br>";
-                } else if (terminationType === 'death') {
-                    entitlementRatio = 1;
-                    calcDetails += "• الوفاة أو العجز الكلي: 100% من المستحقات.<br>";
-                }
-                
-                // حساب مستحقات نهاية الخدمة بالتفصيل
-                const firstFiveYears = Math.min(servicePeriod.years, 5);
-                const remainingYears = Math.max(servicePeriod.years - 5, 0);
-                
-                // حساب الراتب اليومي
-                const dayValue = totalSalary / appSettings.workingDaysPerMonth;
-                
-                // حساب المستحقات للسنوات الخمس الأولى (15 يوم/سنة)
-                firstPeriod = dayValue * 15 * firstFiveYears;
-                
-                // حساب المستحقات للسنوات بعد الخامسة (راتب شهر/سنة)
-                laterPeriod = totalSalary * remainingYears;
-                
-                // حساب مستحقات الأشهر الإضافية (بعد السنوات الكاملة)
-                if (servicePeriod.months > 0) {
-                    monthsAmount = (totalSalary / 12) * servicePeriod.months;
-                }
-                
-                // حساب مستحقات الأيام الإضافية (بعد الأشهر الكاملة)
-                if (servicePeriod.days > 0) {
-                    daysAmount = dayValue * servicePeriod.days;
-                }
-                
-                // حساب مستحقات الإجازات (باستخدام الراتب اليومي)
-                const vacationAmount = dayValue * vacationDays;
-                
-                // حساب مستحقات الإضافي
-                const hourValue = dayValue / appSettings.dailyWorkHours;
-                const normalOvertimeAmount = normalOvertime * hourValue * 1.25;
-                const fridayOvertimeAmount = fridayOvertime * hourValue * 1.5;
-                const holidayOvertimeAmount = holidayOvertime * hourValue * 2;
-                const overtimeAmount = normalOvertimeAmount + fridayOvertimeAmount + holidayOvertimeAmount;
-                
-                // حساب إجمالي مستحقات نهاية الخدمة قبل تطبيق نسبة الاستحقاق
-                const endServiceAmountBeforeRatio = firstPeriod + laterPeriod + monthsAmount + daysAmount;
-                
-                // تطبيق نسبة الاستحقاق على مستحقات نهاية الخدمة فقط
-                const endServiceAmount = endServiceAmountBeforeRatio * entitlementRatio;
-                
-                // حساب الإجمالي النهائي
-                const totalAll = endServiceAmount + vacationAmount + overtimeAmount - deductions;
-                
-                // عرض النتائج في الجدول الرئيسي
-                document.getElementById('calcDetails').innerHTML = calcDetails + 
-                    `• الأيام المقطوعة: ${cutDays.toFixed(3)} يوم<br>` +
-                    `• مدة الخدمة الصافية: ${servicePeriod.years} سنة و ${servicePeriod.months} شهر و ${servicePeriod.days} يوم`;
-                document.getElementById('resultSalary').textContent = formatNumber(basicSalary) + ' د.ك';
-                document.getElementById('resultHousing').textContent = formatNumber(housing) + ' د.ك';
-                document.getElementById('resultTransport').textContent = formatNumber(transport) + ' د.ك';
-                document.getElementById('resultOther').textContent = formatNumber(other) + ' د.ك';
-                document.getElementById('resultTotalSalary').textContent = formatNumber(totalSalary) + ' د.ك';
-                document.getElementById('resultTotalSalaryDetails').textContent = 
-                    `أساسي: ${formatNumber(basicSalary)} + بدلات مختارة`;
-                document.getElementById('resultServicePeriod').textContent = 
-                    servicePeriod.years + ' سنة و ' + servicePeriod.months + ' شهر و ' + servicePeriod.days + ' يوم';
-                document.getElementById('resultServiceDetails').textContent = 
-                    `إجمالي ${servicePeriod.years} سنة و ${servicePeriod.months} شهر و ${servicePeriod.days} يوم (بعد خصم ${cutDays.toFixed(3)} يوم مقطوعة)`;
-                document.getElementById('resultTerminationType').textContent = 
-                    terminationType === 'resignation' ? 'استقالة' : 
-                    terminationType === 'employer' ? 'إنهاء من صاحب العمل' : 'وفاة أو عجز كلي';
-                document.getElementById('resultFirstPeriod').textContent = formatNumber(firstPeriod) + ' د.ك';
-                document.getElementById('resultFirstPeriodDetails').textContent = 
-                    `${firstFiveYears} سنة × ${formatNumber(dayValue)} × 15 يوم`;
-                document.getElementById('resultLaterPeriod').textContent = formatNumber(laterPeriod) + ' د.ك';
-                document.getElementById('resultLaterPeriodDetails').textContent = 
-                    `${remainingYears} سنة × ${formatNumber(totalSalary)} (راتب شهر/سنة)`;
-                document.getElementById('resultMonthsAmount').textContent = formatNumber(monthsAmount) + ' د.ك';
-                document.getElementById('resultMonthsDetails').textContent = 
-                    `${servicePeriod.months} شهر × (${formatNumber(totalSalary)} ÷ 12)`;
-                document.getElementById('resultDaysAmount').textContent = formatNumber(daysAmount) + ' د.ك';
-                document.getElementById('resultDaysDetails').textContent = 
-                    `${servicePeriod.days} يوم × ${formatNumber(dayValue)}`;
-                document.getElementById('resultEntitlementRatio').textContent = (entitlementRatio * 100).toFixed(0) + '%';
-                document.getElementById('resultExcessDeduction').textContent = cutDays.toFixed(3) + ' يوم';
-                document.getElementById('resultExcessDetails').textContent = 
-                    `${cutDays.toFixed(3)} يوم مقطوعة (تخصم من مدة الخدمة)`;
-                document.getElementById('resultVacationAmount').textContent = formatNumber(vacationAmount) + ' د.ك';
-                document.getElementById('resultVacationDetails').textContent = 
-                    `${vacationDays.toFixed(3)} يوم × ${formatNumber(dayValue)} د.ك`;
-                document.getElementById('resultOvertimeAmount').textContent = formatNumber(overtimeAmount) + ' د.ك';
-                document.getElementById('resultOvertimeDetails').textContent = 
-                    `${normalOvertime + fridayOvertime + holidayOvertime} ساعة إضافية`;
-                document.getElementById('resultDeductions').textContent = formatNumber(deductions) + ' د.ك';
-                document.getElementById('resultTotalAll').textContent = formatNumber(Math.max(0, totalAll)) + ' د.ك';
-                
-                // تخزين بيانات الحساب المؤقتة
-                currentEndServiceCalculation = {
-                    employeeId: employeeId,
-                    employeeName: employee.name,
-                    endDate: endDate,
-                    terminationType: terminationType,
-                    servicePeriod: servicePeriod,
-                    totalSalary: totalSalary,
-                    dayValue: dayValue,
-                    endServiceAmount: endServiceAmount,
-                    cutDays: cutDays,
-                    vacationAmount: vacationAmount,
-                    overtimeAmount: overtimeAmount,
-                    totalAll: totalAll
-                };
-                
-                // إظهار زر حفظ نهاية الخدمة
-                saveEndServiceBtn.style.display = 'inline-block';
-                
-                endServiceResults.classList.add('show');
             }
             
-            // دالة حفظ نهاية الخدمة
+            // دالة حفظ الإجازة مع السؤال عن الطباعة
+            function saveVacationWithPrompt() {
+                if (!currentVacationCalculation) {
+                    alert('لا توجد بيانات إجازة لحفظها. يرجى حساب الإجازة أولاً.');
+                    return;
+                }
+                
+                const confirmSave = confirm('هل تريد حفظ الإجازة بدون طباعة؟\n\nنعم: الحفظ فقط\nلا: الرجوع لشاشة الإجازة للتصدير إلى PDF');
+                
+                if (confirmSave) {
+                    // حفظ بدون طباعة
+                    saveVacation();
+                } else {
+                    // الرجوع لشاشة الإجازة
+                    switchScreen('vacation');
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    document.querySelector('[data-screen="vacation"]').classList.add('active');
+                    
+                    // عرض رسالة للمستخدم
+                    alert('تم الرجوع لشاشة الإجازة. يمكنك الآن تصدير النتائج إلى PDF باستخدام زر "تصدير إلى PDF".');
+                }
+            }
+            
+            // دالة حفظ نهاية الخدمة (الوظيفة الأصلية)
             function saveEndService() {
                 if (!currentEndServiceCalculation) {
                     alert('لا توجد بيانات نهاية خدمة لحفظها. يرجى حساب نهاية الخدمة أولاً.');
@@ -2546,8 +2926,8 @@
             // دالة حساب مستحقات الإجازة (عرض فقط - لا تحديث للرصيد)
             function calculateVacation() {
                 const employeeId = document.getElementById('vacationEmployeeSelect').value;
-                const vacationStartDate = document.getElementById('vacationStartDate').value;
-                const vacationEndDate = document.getElementById('vacationEndDate').value;
+                const vacationStartDate = getDateFromInput('vacationStartDate');
+                const vacationEndDate = getDateFromInput('vacationEndDate');
                 
                 if (!employeeId || !vacationStartDate || !vacationEndDate) {
                     alert('يرجى اختيار موظف وتحديد تواريخ بداية ونهاية الإجازة');
@@ -2574,6 +2954,7 @@
                 const usedDays = employee.usedDays || 0;
                 const cutBalance = employee.cutDays || 0;
                 const lastVacationDate = employee.lastVacationCalculation;
+                const balanceStartDate = employee.balanceStartDate || employee.hireDate; // استخدام تاريخ بداية الارصدة بدلاً من تاريخ التعيين
                 
                 // حساب مدة الإجازة بالأيام
                 const startDate = new Date(vacationStartDate);
@@ -2582,7 +2963,8 @@
                 const vacationPeriodDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
                 
                 // حساب الإجازات المتراكمة حتى تاريخ بداية الإجازة (مع كسور الشهر)
-                const accumulatedVacation = calculateAccumulatedVacation(employee.hireDate, vacationStartDate, lastVacationDate);
+                // التعديل: استخدام balanceStartDate بدلاً من employee.hireDate
+                const accumulatedVacation = calculateAccumulatedVacation(balanceStartDate, vacationStartDate, lastVacationDate);
                 
                 // حساب الرصيد الكلي (الرصيد الحالي + الإجازات المتراكمة)
                 const totalAvailableBalance = vacationBalance + accumulatedVacation;
@@ -2615,6 +2997,7 @@
                     `• الأيام المستنفذة: ${usedDays.toFixed(3)} يوم<br>` +
                     `• الأيام المقطوعة: ${cutBalance.toFixed(3)} يوم<br>` +
                     `• آخر تاريخ حساب إجازة: ${lastVacationDate ? formatDate(lastVacationDate) : 'لم يتم أخذ إجازة سابقاً'}<br>` +
+                    `• تاريخ بداية الارصدة: ${formatDate(balanceStartDate)}<br>` +
                     `• الإجازات المتراكمة حتى ${formatDate(vacationStartDate)}: ${accumulatedVacation.toFixed(3)} يوم (باحتساب كسور الشهر)<br>` +
                     `• الرصيد الكلي المتاح: ${totalAvailableBalance.toFixed(3)} يوم<br>` +
                     `• مدة الإجازة المطلوبة: ${vacationPeriodDays} يوم<br>` +
@@ -2654,7 +3037,8 @@
                     newVacationBalance: newVacationBalance,
                     newCutBalance: newCutBalance,
                     vacationTotal: vacationTotal,
-                    accumulatedVacation: accumulatedVacation
+                    accumulatedVacation: accumulatedVacation,
+                    balanceStartDate: balanceStartDate // إضافة تاريخ بداية الارصدة
                 };
                 
                 // إظهار زر حفظ الإجازة
@@ -2681,7 +3065,8 @@
                     newVacationBalance,
                     newCutBalance,
                     vacationTotal,
-                    accumulatedVacation
+                    accumulatedVacation,
+                    balanceStartDate
                 } = currentVacationCalculation;
                 
                 // تأكيد من المستخدم
@@ -2705,7 +3090,7 @@
                         daysToCut,
                         newVacationBalance, 
                         newCutBalance,
-                        `صرف إجازة من ${formatDate(vacationStartDate)} إلى ${formatDate(vacationEndDate)} (${vacationPeriodDays} يوم) - الإجازات المتراكمة: ${accumulatedVacation.toFixed(3)} يوم`
+                        `صرف إجازة من ${formatDate(vacationStartDate)} إلى ${formatDate(vacationEndDate)} (${vacationPeriodDays} يوم) - الإجازات المتراكمة من ${formatDate(balanceStartDate)}: ${accumulatedVacation.toFixed(3)} يوم`
                     );
                     
                     // إخفاء زر حفظ الإجازة
@@ -2739,16 +3124,45 @@
                 includeOther.checked = appSettings.includeOther;
                 workingDaysPerMonth.value = appSettings.workingDaysPerMonth;
                 dailyWorkHours.value = appSettings.dailyWorkHours;
+                
+                // تحميل إعدادات طريقة حساب الإضافي
+                const overtimeCalculation = appSettings.overtimeCalculation || 'basicOnly';
+                if (overtimeCalculation === 'basicOnly') {
+                    overtimeBasicOnly.checked = true;
+                } else if (overtimeCalculation === 'withAll') {
+                    overtimeWithAll.checked = true;
+                } else if (overtimeCalculation === 'withSome') {
+                    overtimeWithSome.checked = true;
+                    // إظهار خيارات البدلات المخصصة
+                    overtimeCustomAllowances.style.display = 'block';
+                }
+                
+                // تحميل إعدادات البدلات للإضافي
+                overtimeIncludeHousing.checked = appSettings.overtimeIncludeHousing || true;
+                overtimeIncludeTransport.checked = appSettings.overtimeIncludeTransport || true;
+                overtimeIncludeOther.checked = appSettings.overtimeIncludeOther || true;
             }
             
             // دالة حفظ الإعدادات
             function saveSettings() {
+                // تحديد طريقة حساب الإضافي المختارة
+                let overtimeCalculation = 'basicOnly';
+                if (overtimeWithAll.checked) {
+                    overtimeCalculation = 'withAll';
+                } else if (overtimeWithSome.checked) {
+                    overtimeCalculation = 'withSome';
+                }
+                
                 appSettings = {
                     includeHousing: includeHousing.checked,
                     includeTransport: includeTransport.checked,
                     includeOther: includeOther.checked,
                     workingDaysPerMonth: parseInt(workingDaysPerMonth.value) || 26,
-                    dailyWorkHours: parseInt(dailyWorkHours.value) || 8
+                    dailyWorkHours: parseInt(dailyWorkHours.value) || 8,
+                    overtimeCalculation: overtimeCalculation, // حفظ الإعداد الجديد
+                    overtimeIncludeHousing: overtimeIncludeHousing.checked, // حفظ الإعدادات الجديدة
+                    overtimeIncludeTransport: overtimeIncludeTransport.checked, // حفظ الإعدادات الجديدة
+                    overtimeIncludeOther: overtimeIncludeOther.checked // حفظ الإعدادات الجديدة
                 };
                 
                 localStorage.setItem('appSettings', JSON.stringify(appSettings));
@@ -2763,12 +3177,25 @@
                         includeTransport: true,
                         includeOther: true,
                         workingDaysPerMonth: 26,
-                        dailyWorkHours: 8
+                        dailyWorkHours: 8,
+                        overtimeCalculation: 'basicOnly', // القيمة الافتراضية الجديدة
+                        overtimeIncludeHousing: true, // القيمة الافتراضية الجديدة
+                        overtimeIncludeTransport: true, // القيمة الافتراضية الجديدة
+                        overtimeIncludeOther: true // القيمة الافتراضية الجديدة
                     };
                     
                     localStorage.setItem('appSettings', JSON.stringify(appSettings));
                     loadSettings();
                     alert('تم إعادة تعيين الإعدادات بنجاح');
+                }
+            }
+            
+            // دالة تبديل عرض خيارات البدلات المخصصة للإضافي
+            function toggleOvertimeCustomAllowances() {
+                if (overtimeWithSome.checked) {
+                    overtimeCustomAllowances.style.display = 'block';
+                } else {
+                    overtimeCustomAllowances.style.display = 'none';
                 }
             }
             
@@ -2783,11 +3210,22 @@
                 });
             }
             
+            // دالة تحديث قائمة الموظفين لإعادة الإصدار
+            function updateReprintEmployeeList() {
+                reprintEmployeeSelect.innerHTML = '<option value="">اختر الموظف</option>';
+                employees.forEach(employee => {
+                    const option = document.createElement('option');
+                    option.value = employee.id;
+                    option.textContent = `${employee.id} - ${employee.name}`;
+                    reprintEmployeeSelect.appendChild(option);
+                });
+            }
+            
             // دالة إنشاء تقرير حركة الإجازات
             function generateVacationReport() {
                 const employeeId = reportEmployeeSelect.value;
-                const startDate = reportStartDate.value;
-                const endDate = reportEndDate.value;
+                const startDate = getDateFromInput('reportStartDate');
+                const endDate = getDateFromInput('reportEndDate');
                 
                 // فلترة السجلات
                 let filteredHistory = vacationHistory;
@@ -2841,6 +3279,407 @@
                 }
                 
                 vacationReportResults.classList.add('show');
+            }
+            
+            // دالة البحث عن المعاملات لإعادة الإصدار
+            function searchReprint() {
+                const employeeId = reprintEmployeeSelect.value;
+                const type = reprintType.value;
+                const startDate = getDateFromInput('reprintStartDate');
+                const endDate = getDateFromInput('reprintEndDate');
+                
+                // فلترة السجلات
+                let filteredHistory = vacationHistory;
+                
+                if (employeeId) {
+                    filteredHistory = filteredHistory.filter(record => record.employeeId === employeeId);
+                }
+                
+                if (type) {
+                    filteredHistory = filteredHistory.filter(record => record.type === type);
+                }
+                
+                if (startDate) {
+                    filteredHistory = filteredHistory.filter(record => new Date(record.date) >= new Date(startDate));
+                }
+                
+                if (endDate) {
+                    filteredHistory = filteredHistory.filter(record => new Date(record.date) <= new Date(endDate + 'T23:59:59'));
+                }
+                
+                // ترتيب السجلات حسب التاريخ
+                filteredHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                // عرض النتائج
+                reprintTableBody.innerHTML = '';
+                reprintActions.style.display = 'none';
+                selectedReprintRecord = null;
+                
+                if (filteredHistory.length === 0) {
+                    reprintTableBody.innerHTML = '<tr><td colspan="9" style="text-align: center;">لا توجد سجلات للفترة المحددة</td></tr>';
+                    reprintSummary.textContent = 'لا توجد سجلات للفترة المحددة';
+                } else {
+                    // فلترة فقط سجلات الإجازات ونهاية الخدمة
+                    const printableRecords = filteredHistory.filter(record => 
+                        record.type === 'صرف إجازة' || record.type === 'نهاية خدمة'
+                    );
+                    
+                    if (printableRecords.length === 0) {
+                        reprintTableBody.innerHTML = '<tr><td colspan="9" style="text-align: center;">لا توجد معاملات قابلة لإعادة الإصدار</td></tr>';
+                        reprintSummary.textContent = 'لا توجد معاملات قابلة لإعادة الإصدار';
+                    } else {
+                        printableRecords.forEach((record, index) => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${formatDate(record.date)}</td>
+                                <td>${record.employeeName}</td>
+                                <td>${record.type}</td>
+                                <td>${(record.usedDays || 0).toFixed(3)}</td>
+                                <td>${(record.cutDaysAdded || 0).toFixed(3)}</td>
+                                <td>${(record.balanceBefore || 0).toFixed(3)}</td>
+                                <td>${(record.balanceAfter || 0).toFixed(3)}</td>
+                                <td>${record.notes || ''}</td>
+                                <td>
+                                    <button class="btn btn-info btn-sm select-reprint" data-index="${index}">
+                                        <i class="fas fa-check"></i> اختيار
+                                    </button>
+                                </td>
+                            `;
+                            reprintTableBody.appendChild(row);
+                        });
+                        
+                        reprintSummary.textContent = `إجمالي المعاملات القابلة لإعادة الإصدار: ${printableRecords.length}`;
+                        
+                        // إضافة أحداث لأزرار الاختيار
+                        document.querySelectorAll('.select-reprint').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const index = parseInt(this.getAttribute('data-index'));
+                                selectReprintRecord(printableRecords[index]);
+                            });
+                        });
+                    }
+                }
+                
+                reprintResults.classList.add('show');
+            }
+            
+            // دالة اختيار سجل لإعادة الإصدار
+            function selectReprintRecord(record) {
+                selectedReprintRecord = record;
+                reprintActions.style.display = 'grid';
+                
+                // تحديث زر إعادة الإصدار
+                reprintPDFBtn.innerHTML = `<i class="fas fa-print"></i> إعادة إصدار ${record.type === 'صرف إجازة' ? 'إجازة' : 'نهاية خدمة'}`;
+                
+                // إزالة التحديد السابق
+                document.querySelectorAll('.select-reprint').forEach(btn => {
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-info');
+                    btn.innerHTML = '<i class="fas fa-check"></i> اختيار';
+                });
+                
+                // تحديد الزر المختار
+                const selectedBtn = document.querySelector(`.select-reprint[data-index="${Array.from(document.querySelectorAll('.select-reprint')).findIndex(btn => btn.getAttribute('data-index') === record.id.toString())}"]`);
+                if (selectedBtn) {
+                    selectedBtn.classList.remove('btn-info');
+                    selectedBtn.classList.add('btn-success');
+                    selectedBtn.innerHTML = '<i class="fas fa-check-circle"></i> مختار';
+                }
+                
+                alert(`تم اختيار ${record.type} للموظف ${record.employeeName} بتاريخ ${formatDate(record.date)} لإعادة الإصدار.`);
+            }
+            
+            // دالة إعادة إصدار المعاملة المختارة
+            async function reprintSelectedPDF() {
+                if (!selectedReprintRecord) {
+                    alert('يرجى اختيار معاملة لإعادة الإصدار أولاً.');
+                    return;
+                }
+                
+                const record = selectedReprintRecord;
+                
+                if (record.type === 'صرف إجازة') {
+                    await reprintVacationPDF(record);
+                } else if (record.type === 'نهاية خدمة') {
+                    await reprintEndServicePDF(record);
+                }
+            }
+            
+            // دالة إعادة إصدار إجازة (المحدثة)
+            async function reprintVacationPDF(record) {
+                const employee = employees.find(emp => emp.id === record.employeeId);
+                
+                if (!employee) {
+                    alert('لم يتم العثور على بيانات الموظف');
+                    return;
+                }
+                
+                // استعادة البيانات من السجل (للإجازات الجديدة)
+                let vacationData = record.vacationData;
+                
+                // إذا لم تكن البيانات متوفرة (للإجازات القديمة)، إعادة بناء البيانات
+                if (!vacationData) {
+                    // محاولة استخراج البيانات من الملاحظات
+                    vacationData = rebuildVacationDataFromNotes(record);
+                    
+                    if (!vacationData) {
+                        // إذا لم نستطع استخراج البيانات، نطلب من المستخدم إدخالها
+                        vacationData = await promptForVacationData(employee, record);
+                        if (!vacationData) {
+                            alert('لا يمكن إعادة إصدار هذه الإجازة بدون بيانات كافية');
+                            return;
+                        }
+                    }
+                }
+                
+                // إنشاء علامات مائية
+                createWatermarks('watermarks-vacation-container', 8);
+                
+                // تحديث قالب PDF للإجازة
+                document.getElementById('pdf-vacation-employee-name').textContent = employee.name;
+                document.getElementById('pdf-vacation-start-date').textContent = formatDate(vacationData.vacationStartDate);
+                document.getElementById('pdf-vacation-end-date').textContent = formatDate(vacationData.vacationEndDate);
+                document.getElementById('pdf-vacation-print-date').textContent = formatDate(new Date().toISOString().split('T')[0]);
+                
+                const summary = document.getElementById('pdf-vacation-summary');
+                summary.innerHTML = `مدة الإجازة: ${vacationData.vacationDays.toFixed(3)} يوم<br>من ${formatDate(vacationData.vacationStartDate)} إلى ${formatDate(vacationData.vacationEndDate)}`;
+                
+                const tableBody = document.getElementById('pdf-vacation-table-body');
+                tableBody.innerHTML = '';
+                
+                // إضافة بيانات الإجازة إلى الجدول
+                const rows = [
+                    ['الراتب الأساسي', formatNumber(employee.basicSalary) + ' د.ك', '-'],
+                    ['بدل السكن', formatNumber(employee.housing) + ' د.ك', '-'],
+                    ['بدل المواصلات', formatNumber(employee.transport) + ' د.ك', '-'],
+                    ['بدلات أخرى', formatNumber(employee.other) + ' د.ك', '-'],
+                    ['إجمالي الراتب', formatNumber(vacationData.vacationTotal / vacationData.vacationDays * appSettings.workingDaysPerMonth) + ' د.ك', '-'],
+                    ['قيمة اليوم الواحد', formatNumber(vacationData.vacationTotal / vacationData.vacationDays) + ' د.ك', `إجمالي الراتب ÷ ${appSettings.workingDaysPerMonth}`],
+                    ['إجمالي مستحقات الإجازة', formatNumber(vacationData.vacationTotal) + ' د.ك', '-']
+                ];
+                
+                rows.forEach(row => {
+                    const tr = document.createElement('tr');
+                    const isTotal = row[0] === 'إجمالي مستحقات الإجازة';
+                    tr.innerHTML = `
+                        <td style="padding: 5px; border: 1px solid #ddd; text-align: right;">${row[0]}</td>
+                        <td style="padding: 5px; border: 1px solid #ddd; text-align: center; ${isTotal ? 'font-size: 14px; font-weight: bold; color: #D8334A;' : ''}">${row[1]}</td>
+                        <td style="padding: 5px; border: 1px solid #ddd; text-align: right; font-size: 9px;">${row[2]}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+                
+                // إنشاء PDF
+                await saveCustomerStatementPDF('pdf-vacation-template', `إعادة_إصدار_إجازة_${employee.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
+            }
+            
+            // دالة إعادة بناء بيانات الإجازة من الملاحظات
+            function rebuildVacationDataFromNotes(record) {
+                const notes = record.notes || '';
+                
+                try {
+                    // محاولة استخراج التواريخ من الملاحظات
+                    const datePattern = /(\d{1,2})\/(\d{1,2})\/(\d{4})/g;
+                    const dates = [];
+                    let match;
+                    
+                    while ((match = datePattern.exec(notes)) !== null) {
+                        const day = match[1];
+                        const month = match[2];
+                        const year = match[3];
+                        dates.push(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`);
+                    }
+                    
+                    if (dates.length >= 2) {
+                        return {
+                            vacationStartDate: dates[0],
+                            vacationEndDate: dates[1],
+                            vacationDays: record.usedDays || 0,
+                            vacationTotal: 0, // سيتم حسابه لاحقاً
+                            vacationPeriodDays: record.usedDays || 0
+                        };
+                    }
+                } catch (error) {
+                    console.error('Error rebuilding vacation data:', error);
+                }
+                
+                return null;
+            }
+            
+            // دالة لطلب بيانات الإجازة من المستخدم
+            async function promptForVacationData(employee, record) {
+                return new Promise((resolve) => {
+                    // إنشاء نافذة حوار مخصصة
+                    const dialog = document.createElement('div');
+                    dialog.style.cssText = `
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        background: white;
+                        padding: 20px;
+                        border-radius: 10px;
+                        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+                        z-index: 10000;
+                        width: 400px;
+                    `;
+                    
+                    dialog.innerHTML = `
+                        <h3 style="color: #D8334A; margin-bottom: 15px;">إدخال بيانات الإجازة</h3>
+                        <p>لإعادة إصدار إجازة ${employee.name}، يرجى إدخال التواريخ:</p>
+                        <div style="margin-bottom: 10px;">
+                            <label>تاريخ بداية الإجازة:</label>
+                            <input type="text" id="reprintVacationStart" class="flatpickr-input date-input" placeholder="يوم/شهر/سنة" style="width: 100%; margin-top: 5px;">
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <label>تاريخ نهاية الإجازة:</label>
+                            <input type="text" id="reprintVacationEnd" class="flatpickr-input date-input" placeholder="يوم/شهر/سنة" style="width: 100%; margin-top: 5px;">
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button id="confirmReprint" style="flex: 1; padding: 10px; background: #4CAF50; color: white; border: none; border-radius: 5px;">تأكيد</button>
+                            <button id="cancelReprint" style="flex: 1; padding: 10px; background: #f44336; color: white; border: none; border-radius: 5px;">إلغاء</button>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(dialog);
+                    
+                    // تهيئة منتقي التاريخ للحقول الجديدة
+                    const startInput = document.getElementById('reprintVacationStart');
+                    const endInput = document.getElementById('reprintVacationEnd');
+                    
+                    flatpickr(startInput, {
+                        locale: 'ar',
+                        dateFormat: "d/m/Y",
+                        allowInput: false,
+                        clickOpens: true,
+                        monthSelectorType: 'static',
+                        yearSelectorType: 'static',
+                        nextArrow: '<i class="fas fa-chevron-right"></i>',
+                        prevArrow: '<i class="fas fa-chevron-left"></i>',
+                        position: 'auto',
+                        disableMobile: true
+                    });
+                    
+                    flatpickr(endInput, {
+                        locale: 'ar',
+                        dateFormat: "d/m/Y",
+                        allowInput: false,
+                        clickOpens: true,
+                        monthSelectorType: 'static',
+                        yearSelectorType: 'static',
+                        nextArrow: '<i class="fas fa-chevron-right"></i>',
+                        prevArrow: '<i class="fas fa-chevron-left"></i>',
+                        position: 'auto',
+                        disableMobile: true
+                    });
+                    
+                    // إضافة أحداث للأزرار
+                    document.getElementById('confirmReprint').addEventListener('click', () => {
+                        const startDate = getDateFromInput('reprintVacationStart');
+                        const endDate = getDateFromInput('reprintVacationEnd');
+                        
+                        if (!startDate || !endDate) {
+                            alert('يرجى إدخال التواريخ بشكل صحيح');
+                            return;
+                        }
+                        
+                        const vacationDays = record.usedDays || 0;
+                        
+                        resolve({
+                            vacationStartDate: startDate,
+                            vacationEndDate: endDate,
+                            vacationDays: vacationDays,
+                            vacationTotal: 0,
+                            vacationPeriodDays: vacationDays
+                        });
+                        
+                        document.body.removeChild(dialog);
+                    });
+                    
+                    document.getElementById('cancelReprint').addEventListener('click', () => {
+                        resolve(null);
+                        document.body.removeChild(dialog);
+                    });
+                });
+            }
+            
+            // دالة إعادة إصدار نهاية الخدمة
+            async function reprintEndServicePDF(record) {
+                if (!record.endServiceData) {
+                    alert('لا توجد بيانات كافية لإعادة إصدار نهاية الخدمة.');
+                    return;
+                }
+                
+                const endServiceData = record.endServiceData;
+                const employee = employees.find(emp => emp.id === record.employeeId);
+                
+                if (!employee) {
+                    alert('لم يتم العثور على بيانات الموظف');
+                    return;
+                }
+                
+                // إنشاء علامات مائية
+                createWatermarks('watermarks-container', 8);
+                
+                // تحديث قالب PDF
+                document.getElementById('pdf-employee-name').textContent = employee.name;
+                document.getElementById('pdf-start-date').textContent = formatDate(employee.hireDate);
+                document.getElementById('pdf-end-date').textContent = formatDate(endServiceData.endDate);
+                document.getElementById('pdf-print-date').textContent = formatDate(new Date().toISOString().split('T')[0]);
+                
+                const summary = document.getElementById('pdf-summary');
+                summary.innerHTML = `مدة الخدمة: ${endServiceData.servicePeriod.years} سنة و ${endServiceData.servicePeriod.months} شهر و ${endServiceData.servicePeriod.days} يوم<br>نوع إنهاء الخدمة: ${endServiceData.terminationType === 'resignation' ? 'استقالة' : endServiceData.terminationType === 'employer' ? 'إنهاء من صاحب العمل' : 'وفاة أو عجز كلي'}`;
+                
+                const tableBody = document.getElementById('pdf-table-body');
+                tableBody.innerHTML = '';
+                
+                // حساب القيم لعرضها
+                const basicSalary = employee.basicSalary;
+                const housing = employee.housing || 0;
+                const transport = employee.transport || 0;
+                const other = employee.other || 0;
+                const totalSalary = endServiceData.totalSalary;
+                const dayValue = endServiceData.dayValue;
+                const cutDays = endServiceData.cutDays || 0;
+                const servicePeriod = endServiceData.servicePeriod;
+                
+                // حساب المستحقات (إعادة حساب بسيط)
+                const firstFiveYears = Math.min(servicePeriod.years, 5);
+                const remainingYears = Math.max(servicePeriod.years - 5, 0);
+                const firstPeriod = dayValue * 15 * firstFiveYears;
+                const laterPeriod = totalSalary * remainingYears;
+                const monthsAmount = servicePeriod.months > 0 ? (totalSalary / 12) * servicePeriod.months : 0;
+                const daysAmount = servicePeriod.days > 0 ? dayValue * servicePeriod.days : 0;
+                const endServiceAmount = firstPeriod + laterPeriod + monthsAmount + daysAmount;
+                
+                // إضافة البيانات إلى الجدول
+                const rows = [
+                    ['الراتب الأساسي', formatNumber(basicSalary) + ' د.ك', '-'],
+                    ['بدل السكن', formatNumber(housing) + ' د.ك', '-'],
+                    ['بدل المواصلات', formatNumber(transport) + ' د.ك', '-'],
+                    ['بدلات أخرى', formatNumber(other) + ' د.ك', '-'],
+                    ['إجمالي الراتب', formatNumber(totalSalary) + ' د.ك', 'أساسي + بدلات'],
+                    ['مستحقات الخمس سنوات الأولى', formatNumber(firstPeriod) + ' د.ك', `${firstFiveYears} سنة × ${formatNumber(dayValue)} × 15 يوم`],
+                    ['مستحقات السنوات بعد الخامسة', formatNumber(laterPeriod) + ' د.ك', `${remainingYears} سنة × ${formatNumber(totalSalary)} (راتب شهر/سنة)`],
+                    ['مستحقات الأشهر الإضافية', formatNumber(monthsAmount) + ' د.ك', `${servicePeriod.months} شهر × (${formatNumber(totalSalary)} ÷ 12)`],
+                    ['مستحقات الأيام الإضافية', formatNumber(daysAmount) + ' د.ك', `${servicePeriod.days} يوم × ${formatNumber(dayValue)}`],
+                    ['خصم الأيام المقطوعة', cutDays.toFixed(3) + ' يوم', `${cutDays} يوم مقطوعة`],
+                    ['إجمالي المستحقات', formatNumber(endServiceData.totalAll) + ' د.ك', '-']
+                ];
+                
+                rows.forEach(row => {
+                    const tr = document.createElement('tr');
+                    const isTotal = row[0] === 'إجمالي المستحقات';
+                    tr.innerHTML = `
+                        <td style="padding: 5px; border: 1px solid #ddd; text-align: right;">${row[0]}</td>
+                        <td style="padding: 5px; border: 1px solid #ddd; text-align: center; ${isTotal ? 'font-size: 14px; font-weight: bold; color: #D8334A;' : ''}">${row[1]}</td>
+                        <td style="padding: 5px; border: 1px solid #ddd; text-align: right; font-size: 9px;">${row[2]}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+                
+                // إنشاء PDF
+                await saveCustomerStatementPDF('pdf-template', `إعادة_إصدار_نهاية_خدمة_${employee.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pdf`);
             }
             
             // دالة تحديث مسارات النسخ الاحتياطية
@@ -2914,6 +3753,7 @@
                     loadSettings();
                     loadEmployees();
                     updateReportEmployeeList();
+                    updateReprintEmployeeList();
                     
                     alert('تم استعادة النسخة الاحتياطية بنجاح');
                 }
@@ -2941,6 +3781,7 @@
                                 loadSettings();
                                 loadEmployees();
                                 updateReportEmployeeList();
+                                updateReprintEmployeeList();
                                 updateBackupInfo();
                                 
                                 alert('تم استعادة النسخة الاحتياطية من الملف بنجاح');
@@ -2991,7 +3832,7 @@
                     return;
                 }
                 
-                if (confirm('هل تريد حذف جميع النسخ الاحتياطية؟ لا يمكن التراجع عن هذا الإجراء.')) {
+                if (confirm('هل تريد حذف جميع النسخ احتياطية؟ لا يمكن التراجع عن هذا الإجراء.')) {
                     backups = [];
                     localStorage.removeItem('backups');
                     updateBackupInfo();
@@ -3212,8 +4053,8 @@
             // دالة تصدير تقرير حركة الإجازات إلى PDF
             async function exportVacationHistoryPDF() {
                 const employeeId = reportEmployeeSelect.value;
-                const startDate = reportStartDate.value;
-                const endDate = reportEndDate.value;
+                const startDate = getDateFromInput('reportStartDate');
+                const endDate = getDateFromInput('reportEndDate');
                 
                 // فلترة السجلات
                 let filteredHistory = vacationHistory;
@@ -3318,6 +4159,204 @@
                     console.error('Error generating PDF:', error);
                     alert('حدث خطأ أثناء إنشاء ملف PDF: ' + error.message);
                 }
+            }
+            
+            // دالة حساب جميع مستحقات نهاية الخدمة
+            function calculateEndService() {
+                const employeeId = document.getElementById('employeeSelect').value;
+                const endDate = getDateFromInput('endDate');
+                const terminationType = document.getElementById('terminationType').value;
+                const normalOvertime = parseInt(document.getElementById('normalOvertime').value) || 0;
+                const fridayOvertime = parseInt(document.getElementById('fridayOvertime').value) || 0;
+                const holidayOvertime = parseInt(document.getElementById('holidayOvertime').value) || 0;
+                
+                if (!employeeId || !endDate) {
+                    alert('يرجى اختيار موظف وتحديد تاريخ إنهاء الخدمة');
+                    return;
+                }
+                
+                const employee = employees.find(emp => emp.id === employeeId);
+                if (!employee) {
+                    alert('لم يتم العثور على بيانات الموظف');
+                    return;
+                }
+                
+                // التحقق مما إذا كان الموظف قد تم حساب نهاية خدمته مسبقاً
+                if (employee.endServiceCalculated) {
+                    alert('هذا الموظف تم حساب نهاية خدمته مسبقاً ولا يمكن إعادة الحساب.');
+                    return;
+                }
+                
+                const basicSalary = employee.basicSalary;
+                const housing = employee.housing || 0;
+                const transport = employee.transport || 0;
+                const other = employee.other || 0;
+                const vacationDays = employee.vacationDays || 0;
+                const cutDays = employee.cutDays || 0;
+                const startDate = employee.hireDate;
+                const deductions = 0;
+                
+                const totalSalary = calculateTotalSalary(employee);
+                const overtimeSalary = calculateTotalSalary(employee, true); // حساب الراتب للإضافي حسب الإعدادات
+                
+                // حساب مدة الخدمة الصافية بعد خصم الأيام المقطوعة
+                const servicePeriod = calculateNetServicePeriod(startDate, endDate, cutDays);
+                
+                let firstPeriod = 0;
+                let laterPeriod = 0;
+                let monthsAmount = 0;
+                let daysAmount = 0;
+                let entitlementRatio = 1;
+                let calcDetails = "";
+                
+                // حساب المستحقات حسب نوع إنهاء الخدمة
+                if (terminationType === 'resignation') {
+                    // استقالة - المادة 51 من قانون العمل الكويتي
+                    if (servicePeriod.years < 3) {
+                        entitlementRatio = 0;
+                        calcDetails += "• الاستقالة قبل 3 سنوات: لا مستحقات نهاية خدمة.<br>";
+                    } else if (servicePeriod.years < 5) {
+                        entitlementRatio = 1/3;
+                        calcDetails += "• الاستقالة بين 3-5 سنوات: ثلث مستحقات نهاية الخدمة.<br>";
+                    } else if (servicePeriod.years < 10) {
+                        entitlementRatio = 2/3;
+                        calcDetails += "• الاستقالة بين 5-10 سنوات: ثلثي مستحقات نهاية الخدمة.<br>";
+                    } else {
+                        entitlementRatio = 1;
+                        calcDetails += "• الاستقالة بعد 10 سنوات: كامل مستحقات نهاية الخدمة.<br>";
+                    }
+                } else if (terminationType === 'employer') {
+                    entitlementRatio = 1;
+                    calcDetails += "• إنهاء الخدمة من صاحب العمل: 100% من المستحقات.<br>";
+                } else if (terminationType === 'death') {
+                    entitlementRatio = 1;
+                    calcDetails += "• الوفاة أو العجز الكلي: 100% من المستحقات.<br>";
+                }
+                
+                // حساب مستحقات نهاية الخدمة بالتفصيل
+                const firstFiveYears = Math.min(servicePeriod.years, 5);
+                const remainingYears = Math.max(servicePeriod.years - 5, 0);
+                
+                // حساب الراتب اليومي
+                const dayValue = totalSalary / appSettings.workingDaysPerMonth;
+                
+                // حساب المستحقات للسنوات الخمس الأولى (15 يوم/سنة)
+                firstPeriod = dayValue * 15 * firstFiveYears;
+                
+                // حساب المستحقات للسنوات بعد الخامسة (راتب شهر/سنة)
+                laterPeriod = totalSalary * remainingYears;
+                
+                // حساب مستحقات الأشهر الإضافية (بعد السنوات الكاملة)
+                if (servicePeriod.months > 0) {
+                    monthsAmount = (totalSalary / 12) * servicePeriod.months;
+                }
+                
+                // حساب مستحقات الأيام الإضافية (بعد الأشهر الكاملة)
+                if (servicePeriod.days > 0) {
+                    daysAmount = dayValue * servicePeriod.days;
+                }
+                
+                // حساب مستحقات الإجازات (باستخدام الراتب اليومي)
+                const vacationAmount = dayValue * vacationDays;
+                
+                // حساب مستحقات الإضافي بناءً على الراتب المحدد في الإعدادات
+                const hourValue = overtimeSalary / (appSettings.workingDaysPerMonth * appSettings.dailyWorkHours);
+                const normalOvertimeAmount = normalOvertime * hourValue * 1.25;
+                const fridayOvertimeAmount = fridayOvertime * hourValue * 1.5;
+                const holidayOvertimeAmount = holidayOvertime * hourValue * 2;
+                const overtimeAmount = normalOvertimeAmount + fridayOvertimeAmount + holidayOvertimeAmount;
+                
+                // حساب إجمالي مستحقات نهاية الخدمة قبل تطبيق نسبة الاستحقاق
+                const endServiceAmountBeforeRatio = firstPeriod + laterPeriod + monthsAmount + daysAmount;
+                
+                // تطبيق نسبة الاستحقاق على مستحقات نهاية الخدمة فقط
+                const endServiceAmount = endServiceAmountBeforeRatio * entitlementRatio;
+                
+                // حساب الإجمالي النهائي
+                const totalAll = endServiceAmount + vacationAmount + overtimeAmount - deductions;
+                
+                // عرض النتائج في الجدول الرئيسي
+                let overtimeCalculationText = '';
+                switch(appSettings.overtimeCalculation) {
+                    case 'basicOnly':
+                        overtimeCalculationText = 'الراتب الأساسي فقط';
+                        break;
+                    case 'withAll':
+                        overtimeCalculationText = 'الراتب الأساسي مع جميع البدلات';
+                        break;
+                    case 'withSome':
+                        let includedAllowances = [];
+                        if (appSettings.overtimeIncludeHousing) includedAllowances.push('بدل السكن');
+                        if (appSettings.overtimeIncludeTransport) includedAllowances.push('بدل المواصلات');
+                        if (appSettings.overtimeIncludeOther) includedAllowances.push('بدلات أخرى');
+                        overtimeCalculationText = `الراتب الأساسي مع ${includedAllowances.join(' و ')}`;
+                        break;
+                }
+                
+                document.getElementById('calcDetails').innerHTML = calcDetails + 
+                    `• الأيام المقطوعة: ${cutDays.toFixed(3)} يوم<br>` +
+                    `• مدة الخدمة الصافية: ${servicePeriod.years} سنة و ${servicePeriod.months} شهر و ${servicePeriod.days} يوم<br>` +
+                    `• طريقة حساب الإضافي: ${overtimeCalculationText}`;
+                document.getElementById('resultSalary').textContent = formatNumber(basicSalary) + ' د.ك';
+                document.getElementById('resultHousing').textContent = formatNumber(housing) + ' د.ك';
+                document.getElementById('resultTransport').textContent = formatNumber(transport) + ' د.ك';
+                document.getElementById('resultOther').textContent = formatNumber(other) + ' د.ك';
+                document.getElementById('resultTotalSalary').textContent = formatNumber(totalSalary) + ' د.ك';
+                document.getElementById('resultTotalSalaryDetails').textContent = 
+                    `أساسي: ${formatNumber(basicSalary)} + بدلات مختارة`;
+                document.getElementById('resultServicePeriod').textContent = 
+                    servicePeriod.years + ' سنة و ' + servicePeriod.months + ' شهر و ' + servicePeriod.days + ' يوم';
+                document.getElementById('resultServiceDetails').textContent = 
+                    `إجمالي ${servicePeriod.years} سنة و ${servicePeriod.months} شهر و ${servicePeriod.days} يوم (بعد خصم ${cutDays.toFixed(3)} يوم مقطوعة)`;
+                document.getElementById('resultTerminationType').textContent = 
+                    terminationType === 'resignation' ? 'استقالة' : 
+                    terminationType === 'employer' ? 'إنهاء من صاحب العمل' : 'وفاة أو عجز كلي';
+                document.getElementById('resultFirstPeriod').textContent = formatNumber(firstPeriod) + ' د.ك';
+                document.getElementById('resultFirstPeriodDetails').textContent = 
+                    `${firstFiveYears} سنة × ${formatNumber(dayValue)} × 15 يوم`;
+                document.getElementById('resultLaterPeriod').textContent = formatNumber(laterPeriod) + ' د.ك';
+                document.getElementById('resultLaterPeriodDetails').textContent = 
+                    `${remainingYears} سنة × ${formatNumber(totalSalary)} (راتب شهر/سنة)`;
+                document.getElementById('resultMonthsAmount').textContent = formatNumber(monthsAmount) + ' د.ك';
+                document.getElementById('resultMonthsDetails').textContent = 
+                    `${servicePeriod.months} شهر × (${formatNumber(totalSalary)} ÷ 12)`;
+                document.getElementById('resultDaysAmount').textContent = formatNumber(daysAmount) + ' د.ك';
+                document.getElementById('resultDaysDetails').textContent = 
+                    `${servicePeriod.days} يوم × ${formatNumber(dayValue)}`;
+                document.getElementById('resultEntitlementRatio').textContent = (entitlementRatio * 100).toFixed(0) + '%';
+                document.getElementById('resultExcessDeduction').textContent = cutDays.toFixed(3) + ' يوم';
+                document.getElementById('resultExcessDetails').textContent = 
+                    `${cutDays.toFixed(3)} يوم مقطوعة (تخصم من مدة الخدمة)`;
+                document.getElementById('resultVacationAmount').textContent = formatNumber(vacationAmount) + ' د.ك';
+                document.getElementById('resultVacationDetails').textContent = 
+                    `${vacationDays.toFixed(3)} يوم × ${formatNumber(dayValue)} د.ك`;
+                document.getElementById('resultOvertimeAmount').textContent = formatNumber(overtimeAmount) + ' د.ك';
+                document.getElementById('resultOvertimeDetails').textContent = 
+                    `${normalOvertime + fridayOvertime + holidayOvertime} ساعة إضافية (حساب على ${formatNumber(overtimeSalary)} د.ك)`;
+                document.getElementById('resultDeductions').textContent = formatNumber(deductions) + ' د.ك';
+                document.getElementById('resultTotalAll').textContent = formatNumber(Math.max(0, totalAll)) + ' د.ك';
+                
+                // تخزين بيانات الحساب المؤقتة
+                currentEndServiceCalculation = {
+                    employeeId: employeeId,
+                    employeeName: employee.name,
+                    endDate: endDate,
+                    terminationType: terminationType,
+                    servicePeriod: servicePeriod,
+                    totalSalary: totalSalary,
+                    overtimeSalary: overtimeSalary,
+                    dayValue: dayValue,
+                    endServiceAmount: endServiceAmount,
+                    cutDays: cutDays,
+                    vacationAmount: vacationAmount,
+                    overtimeAmount: overtimeAmount,
+                    totalAll: totalAll
+                };
+                
+                // إظهار زر حفظ نهاية الخدمة
+                saveEndServiceBtn.style.display = 'inline-block';
+                
+                endServiceResults.classList.add('show');
             }
         });
     </script>
